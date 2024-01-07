@@ -35,7 +35,7 @@ public class User {
 
     private String userPassword;
 
-    private String userName;
+    private String userNickName;
 
     private LocalDate userAge;
 
@@ -55,11 +55,11 @@ public class User {
     private List<Like> likes = new ArrayList<>();
 
     @Builder
-    public User(String userEmail, String userPassword, String userName, LocalDate userAge, String userProfileImg,
+    public User(String userEmail, String userPassword, String userNickName, LocalDate userAge, String userProfileImg,
                 TripStyle tripStyles) {
         this.userEmail = userEmail;
         this.userPassword = userPassword;
-        this.userName = userName;
+        this.userNickName = userNickName;
         this.userAge = userAge;
         this.userProfileImg = userProfileImg;
         this.userTripStyle = tripStyles;
