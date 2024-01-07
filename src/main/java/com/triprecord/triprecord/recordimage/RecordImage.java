@@ -27,11 +27,11 @@ public class RecordImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
-    private Record recordId;
+    private Record linkedRecord;
 
     @Builder
-    public RecordImage(String recordImg, Record recordId) {
+    public RecordImage(String recordImg, Record record) {
         this.recordImg = recordImg;
-        this.recordId = recordId;
+        this.linkedRecord = record;
     }
 }

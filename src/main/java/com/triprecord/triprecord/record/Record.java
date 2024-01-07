@@ -43,27 +43,27 @@ public class Record extends EntityBaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User createdUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
-    private Place placeId;
-
-    @Builder
-    public Record(String recordTitle, String recordContent, Date tripStartDate, Date tripEndDate, User userId,
-                  Place placeId) {
-        this.recordTitle = recordTitle;
-        this.recordContent = recordContent;
-        this.tripStartDate = tripStartDate;
-        this.tripEndDate = tripEndDate;
-        this.userId = userId;
-        this.placeId = placeId;
-    }
+    private Place recordPlace;
 
     @OneToMany(mappedBy = "likedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "recordId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "linkedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RecordImage> recordImages = new ArrayList<>();
+
+    @Builder
+    public Record(String recordTitle, String recordContent, LocalDate tripStartDate, LocalDate tripEndDate, User user,
+                  Place place) {
+        this.recordTitle = recordTitle;
+        this.recordContent = recordContent;
+        this.tripStartDate = tripStartDate;
+        this.tripEndDate = tripEndDate;
+        this.createdUser = user;
+        this.recordPlace = place;
+    }
 
 }

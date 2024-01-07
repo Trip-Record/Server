@@ -45,20 +45,23 @@ public class User {
     @JoinColumn(name = "trip_style_id")
     private TripStyle userTripStyle;
 
+    @OneToMany(mappedBy = "createdUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Record> records = new ArrayList<>();
+
+    @OneToMany(mappedBy = "commentedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "likedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Like> likes = new ArrayList<>();
+
     @Builder
     public User(String userEmail, String userPassword, String userName, LocalDate userAge, String userProfileImg,
-                TripStyle styleId) {
+                TripStyle tripStyles) {
         this.userEmail = userEmail;
         this.userPassword = userPassword;
         this.userName = userName;
         this.userAge = userAge;
         this.userProfileImg = userProfileImg;
-        this.userTripStyle = styleId;
+        this.userTripStyle = tripStyles;
     }
-    @OneToMany(mappedBy = "userId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Record> records = new ArrayList<>();
-    @OneToMany(mappedBy = "commentedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-    @OneToMany(mappedBy = "likedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
 }

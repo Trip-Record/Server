@@ -36,9 +36,9 @@ public class Comment extends EntityBaseTime {
     private User commentedUser;
 
     @Builder
-    public Comment(String commentContent, Record recordId, User userId) {
+    public Comment(String commentContent, Record record, User user) {
         this.commentContent = commentContent;
-        this.commentedRecord = recordId;
-        this.commentedUser = userId;
+        this.commentedRecord = record;
+        this.commentedUser = user;
     }
 }
