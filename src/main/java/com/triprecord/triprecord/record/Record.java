@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -36,9 +37,9 @@ public class Record extends EntityBaseTime {
 
     private String recordContent;
 
-    private Date tripStartDate;
+    private LocalDate tripStartDate;
 
-    private Date tripEndDate;
+    private LocalDate tripEndDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
