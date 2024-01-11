@@ -43,6 +43,17 @@ public class Schedule extends EntityBaseTime {
     @JoinColumn(name = "user_id")
     private User createdUser;
 
+    @OneToMany(mappedBy = "linkedSchedule", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<SchedulePlace> schedulePlaces = new ArrayList<>();
+
+    @OneToMany(mappedBy = "linkedSchedule", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ScheduleDetail> scheduleDetails = new ArrayList<>();
+
+    @OneToMany(mappedBy = "likedSchedule", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ScheduleLike> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "commentedSchedule", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ScheduleComment> comments = new ArrayList<>();
 
     @Builder
     public Schedule(String scheduleTitle, LocalDate startDate, LocalDate endDate, User user) {
