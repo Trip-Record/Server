@@ -23,7 +23,7 @@ public class UserController {
         try {
             URI uri = URI.create("/users/" + userService.signup(userCreateRequest));
             return ResponseEntity.created(uri).build();
-        } catch (AuthException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

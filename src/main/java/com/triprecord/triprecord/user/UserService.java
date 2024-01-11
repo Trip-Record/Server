@@ -24,11 +24,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public String signup(UserCreateRequest userCreateRequest) throws AuthException {
+    public String signup(UserCreateRequest userCreateRequest) {
         Optional<User> user = userRepository.findByUserEmail(userCreateRequest.userEmail());
 
         if (!user.isEmpty()) {
-            throw new AuthException("이미 존재하는 사용자입니다.");
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
 
         User newUser = User.builder()
