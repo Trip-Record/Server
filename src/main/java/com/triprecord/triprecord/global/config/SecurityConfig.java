@@ -46,8 +46,7 @@ public class SecurityConfig {
             로그인 API 요청은 인증 인가 없이도 요청이 가능하도록 설정
              */
         http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/users/login/**").permitAll();
-                    auth.requestMatchers("/users/signup/**").permitAll();
+                    auth.requestMatchers("/users/login/**", "/users/signup/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

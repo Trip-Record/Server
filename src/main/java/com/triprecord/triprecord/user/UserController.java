@@ -31,7 +31,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserLoginRequest userLoginRequest) {
         try {
-            return ResponseEntity.ok().body(Map.of("Authorization", userService.login(userLoginRequest))); // 토큰 body에 담아서 보냄
+            String token = userService.login(userLoginRequest);
+            return ResponseEntity.ok().body(Map.of("Authorization", token));
         } catch (AuthException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

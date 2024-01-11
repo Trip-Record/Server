@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -18,7 +17,6 @@ import java.io.IOException;
 
 import static com.triprecord.triprecord.global.config.jwt.JwtValidationType.VALID_TOKEN;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -33,9 +31,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String token = getJwtFromRequest(request);
             if (jwtProvider.validateToken(token) == VALID_TOKEN) {
-                Long memberId = jwtProvider.getUserFromJwt(token);
+                Long userId = jwtProvider.getUserFromJwt(token);
                 // authentication 객체 생성 -> principal에 유저정보를 담는다.
-                UserAuthentication authentication = new UserAuthentication(memberId.toString(), null, null);
+                UserAuthentication authentication = new UserAuthentication(userId.toString(), null, null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
@@ -51,9 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_PREFIX)) {
-            return bearerToken.substring(TOKEN_PREFIX.length());
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.hasText(header) && header.startsWith(TOKEN_PREFIX)) {
+            return header.substring(TOKEN_PREFIX.length());
         }
         return null;
     }
