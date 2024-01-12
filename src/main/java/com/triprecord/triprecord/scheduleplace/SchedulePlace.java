@@ -1,6 +1,6 @@
 package com.triprecord.triprecord.scheduleplace;
 
-import com.triprecord.triprecord.place.Place;
+import com.triprecord.triprecord.location.model.Place;
 import com.triprecord.triprecord.schedule.Schedule;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
