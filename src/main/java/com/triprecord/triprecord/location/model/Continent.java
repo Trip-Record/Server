@@ -14,6 +14,7 @@ public class Continent {
 
     @Id
     private Long continentId;
+
     private String continentName;
 
 }

@@ -17,10 +17,11 @@ public class Country {
 
     @Id
     private Long countryId;
-    private String countryName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "continent_id")
     private Continent continent;
+
+    private String countryName;
 
 }
