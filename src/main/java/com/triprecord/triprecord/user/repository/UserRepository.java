@@ -1,5 +1,6 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.repository;
 
+import com.triprecord.triprecord.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

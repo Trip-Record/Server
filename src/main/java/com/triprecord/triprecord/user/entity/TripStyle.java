@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.tripstyle;
+package com.triprecord.triprecord.user.entity;
 
 
 import jakarta.persistence.Entity;

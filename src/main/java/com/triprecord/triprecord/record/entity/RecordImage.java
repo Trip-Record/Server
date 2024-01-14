@@ -1,7 +1,7 @@
-package com.triprecord.triprecord.scheduleplace;
+package com.triprecord.triprecord.record.entity;
 
-import com.triprecord.triprecord.location.model.Place;
-import com.triprecord.triprecord.schedule.Schedule;
+
+import com.triprecord.triprecord.record.entity.Record;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -17,24 +17,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SchedulePlace {
+public class RecordImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long schedulePlaceId;
+    private Long recordImgId;
+
+    private String recordImg;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule linkedSchedule;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id")
-    private Place schedulePlace;
-
+    @JoinColumn(name = "record_id")
+    private Record linkedRecord;
 
     @Builder
-    public SchedulePlace(Schedule schedule, Place place) {
-        this.linkedSchedule = schedule;
-        this.schedulePlace = place;
+    public RecordImage(String recordImg, Record record) {
+        this.recordImg = recordImg;
+        this.linkedRecord = record;
     }
 }
