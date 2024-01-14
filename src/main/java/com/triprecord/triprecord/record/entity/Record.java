@@ -2,7 +2,7 @@ package com.triprecord.triprecord.record.entity;
 
 
 import com.triprecord.triprecord.global.util.EntityBaseTime;
-import com.triprecord.triprecord.user.User;
+import com.triprecord.triprecord.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

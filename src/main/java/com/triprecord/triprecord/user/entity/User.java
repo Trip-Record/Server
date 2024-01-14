@@ -1,9 +1,9 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.entity;
 
 import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.entity.RecordLike;
 import com.triprecord.triprecord.record.entity.Record;
-import com.triprecord.triprecord.tripstyle.TripStyle;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
