@@ -22,7 +22,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionDTO> methodArgumentNotValidException(final MethodArgumentNotValidException e){
         log.error(String.format(ERROR_LOG, e.getParameter(), "객체검증에러"));
-        return ResponseEntity.ok(new ExceptionDTO("필요한 데이터가 모두 입력되지 않았습니다."));
+        return ResponseEntity.badRequest().body(new ExceptionDTO("필요한 데이터가 모두 입력되지 않았습니다."));
     }
 
     @ExceptionHandler(RuntimeException.class)
