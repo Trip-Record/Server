@@ -1,7 +1,7 @@
-package com.triprecord.triprecord.like;
+package com.triprecord.triprecord.record.entity;
 
 
-import com.triprecord.triprecord.record.Record;
+import com.triprecord.triprecord.global.util.EntityBaseTime;
 import com.triprecord.triprecord.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,26 +17,27 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "`like`")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+public class RecordComment extends EntityBaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long likeId;
+    private Long commentId;
+
+    private String commentContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
-    private Record likedRecord;
+    private Record commentedRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User likedUser;
+    private User commentedUser;
 
     @Builder
-    public Like(Record record, User user) {
-        this.likedRecord = record;
-        this.likedUser = user;
+    public RecordComment(String commentContent, Record record, User user) {
+        this.commentContent = commentContent;
+        this.commentedRecord = record;
+        this.commentedUser = user;
     }
-
 }

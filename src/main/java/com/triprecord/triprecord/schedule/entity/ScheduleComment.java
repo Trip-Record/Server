@@ -1,7 +1,7 @@
-package com.triprecord.triprecord.schedulecomment;
+package com.triprecord.triprecord.schedule.entity;
 
 import com.triprecord.triprecord.global.util.EntityBaseTime;
-import com.triprecord.triprecord.schedule.Schedule;
+import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

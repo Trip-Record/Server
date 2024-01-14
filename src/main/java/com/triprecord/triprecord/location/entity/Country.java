@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.location.model;
+package com.triprecord.triprecord.location.entity;
 
 
 import jakarta.persistence.Entity;

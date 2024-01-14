@@ -1,12 +1,7 @@
-package com.triprecord.triprecord.record;
+package com.triprecord.triprecord.record.entity;
 
 
 import com.triprecord.triprecord.global.util.EntityBaseTime;
-import com.triprecord.triprecord.like.Like;
-import com.triprecord.triprecord.location.model.Place;
-import com.triprecord.triprecord.recordimage.RecordImage;
-import com.triprecord.triprecord.recordplace.RecordPlace;
-import com.triprecord.triprecord.scheduleplace.SchedulePlace;
 import com.triprecord.triprecord.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -17,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +46,7 @@ public class Record extends EntityBaseTime {
     private List<RecordPlace> recordPlaces = new ArrayList<>();
 
     @OneToMany(mappedBy = "likedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
+    private List<RecordLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "linkedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RecordImage> recordImages = new ArrayList<>();
