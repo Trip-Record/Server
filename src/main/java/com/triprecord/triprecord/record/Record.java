@@ -29,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Record extends EntityBaseTime {
+public class Record {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
