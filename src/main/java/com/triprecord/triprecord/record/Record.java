@@ -3,8 +3,10 @@ package com.triprecord.triprecord.record;
 
 import com.triprecord.triprecord.global.util.EntityBaseTime;
 import com.triprecord.triprecord.like.Like;
-import com.triprecord.triprecord.place.Place;
+import com.triprecord.triprecord.location.model.Place;
 import com.triprecord.triprecord.recordimage.RecordImage;
+import com.triprecord.triprecord.recordplace.RecordPlace;
+import com.triprecord.triprecord.scheduleplace.SchedulePlace;
 import com.triprecord.triprecord.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -45,9 +47,9 @@ public class Record extends EntityBaseTime {
     @JoinColumn(name = "user_id")
     private User createdUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "place_id")
-    private Place recordPlace;
+
+    @OneToMany(mappedBy = "linkedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<RecordPlace> recordPlaces = new ArrayList<>();
 
     @OneToMany(mappedBy = "likedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
@@ -56,14 +58,12 @@ public class Record extends EntityBaseTime {
     private List<RecordImage> recordImages = new ArrayList<>();
 
     @Builder
-    public Record(String recordTitle, String recordContent, LocalDate tripStartDate, LocalDate tripEndDate, User user,
-                  Place place) {
+    public Record(String recordTitle, String recordContent, LocalDate tripStartDate, LocalDate tripEndDate, User user) {
         this.recordTitle = recordTitle;
         this.recordContent = recordContent;
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
         this.createdUser = user;
-        this.recordPlace = place;
     }
 
 }
