@@ -3,6 +3,8 @@ package com.triprecord.triprecord.user;
 import com.triprecord.triprecord.basicproflie.BasicProfileRepository;
 import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
+import com.triprecord.triprecord.global.exception.ErrorCode;
+import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.user.repository.TripStyleRepository;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
@@ -29,8 +31,8 @@ public class UserService {
     public String signup(UserCreateRequest userCreateRequest) {
         Optional<User> user = userRepository.findByUserEmail(userCreateRequest.userEmail());
 
-        if (!user.isEmpty()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        if (user.isPresent()) {
+            throw new TripRecordException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User newUser = User.builder()
@@ -47,13 +49,11 @@ public class UserService {
         return newUser.getUserId().toString();
     }
 
-    public String login(UserLoginRequest userLoginRequest) throws AuthException {
+    public String login(UserLoginRequest userLoginRequest) {
         User user = userRepository.findByUserEmail(userLoginRequest.userEmail())
-                .orElseThrow(() -> new AuthException("해당하는 사용자가 없습니다."));
-
+                .orElseThrow(() -> new TripRecordException(ErrorCode.USER_NOT_FOUND));
         if (!passwordEncoder.matches(userLoginRequest.userPassword(), user.getUserPassword()))
-            throw new AuthException("비밀번호가 일치하지 않습니다.");
-
+            throw new TripRecordException(ErrorCode.INVALID_PASSWORD);
         UserAuthentication userAuthentication = new UserAuthentication(user.getUserId(), null, null);
 
         return jwtProvider.generateToken(userAuthentication);
