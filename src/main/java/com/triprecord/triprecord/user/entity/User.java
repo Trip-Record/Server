@@ -1,9 +1,9 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.entity;
 
-import com.triprecord.triprecord.comment.Comment;
-import com.triprecord.triprecord.like.Like;
-import com.triprecord.triprecord.record.Record;
-import com.triprecord.triprecord.tripstyle.TripStyle;
+import com.triprecord.triprecord.record.entity.RecordComment;
+import com.triprecord.triprecord.record.entity.RecordLike;
+import com.triprecord.triprecord.record.entity.Record;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -49,10 +49,10 @@ public class User {
     private List<Record> records = new ArrayList<>();
 
     @OneToMany(mappedBy = "commentedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
+    private List<RecordComment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "likedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
+    private List<RecordLike> likes = new ArrayList<>();
 
     @Builder
     public User(String userEmail, String userPassword, String userNickname, LocalDate userAge, String userProfileImg,

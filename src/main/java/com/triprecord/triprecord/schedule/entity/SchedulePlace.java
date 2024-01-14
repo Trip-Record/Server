@@ -1,8 +1,6 @@
-package com.triprecord.triprecord.recordplace;
+package com.triprecord.triprecord.schedule.entity;
 
-
-import com.triprecord.triprecord.location.model.Place;
-import com.triprecord.triprecord.record.Record;
+import com.triprecord.triprecord.location.entity.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,23 +16,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RecordPlace {
+public class SchedulePlace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long recordPlaceId;
+    private Long schedulePlaceId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id")
-    private Record linkedRecord;
+    @JoinColumn(name = "schedule_id")
+    private Schedule linkedSchedule;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
-    private Place recordPlace;
+    private Place schedulePlace;
+
 
     @Builder
-    public RecordPlace(Record record, Place place) {
-        this.linkedRecord = record;
-        this.recordPlace = place;
+    public SchedulePlace(Schedule schedule, Place place) {
+        this.linkedSchedule = schedule;
+        this.schedulePlace = place;
     }
 }

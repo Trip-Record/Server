@@ -1,8 +1,7 @@
-package com.triprecord.triprecord.schedulelike;
+package com.triprecord.triprecord.record.entity;
 
 
-import com.triprecord.triprecord.schedule.Schedule;
-import com.triprecord.triprecord.user.User;
+import com.triprecord.triprecord.location.entity.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,24 +17,23 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleLike {
+public class RecordPlace {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long scheduleLikeId;
+    private Long recordPlaceId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule likedSchedule;
+    @JoinColumn(name = "record_id")
+    private Record linkedRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User likedUser;
-
+    @JoinColumn(name = "place_id")
+    private Place recordPlace;
 
     @Builder
-    public ScheduleLike(Schedule schedule, User user) {
-        this.likedSchedule = schedule;
-        this.likedUser = user;
+    public RecordPlace(Record record, Place place) {
+        this.linkedRecord = record;
+        this.recordPlace = place;
     }
 }

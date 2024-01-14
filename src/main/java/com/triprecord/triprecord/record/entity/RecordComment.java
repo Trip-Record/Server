@@ -1,8 +1,8 @@
-package com.triprecord.triprecord.schedulecomment;
+package com.triprecord.triprecord.record.entity;
+
 
 import com.triprecord.triprecord.global.util.EntityBaseTime;
-import com.triprecord.triprecord.schedule.Schedule;
-import com.triprecord.triprecord.user.User;
+import com.triprecord.triprecord.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -18,26 +18,26 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ScheduleComment extends EntityBaseTime {
+public class RecordComment extends EntityBaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long scheduleCommentId;
+    private Long commentId;
 
-    private String scheduleCommentContent;
+    private String commentContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
-    private Schedule commentedSchedule;
+    @JoinColumn(name = "record_id")
+    private Record commentedRecord;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User commentedUser;
 
     @Builder
-    public ScheduleComment(String content, Schedule schedule, User user) {
-        this.scheduleCommentContent = content;
-        this.commentedSchedule = schedule;
+    public RecordComment(String commentContent, Record record, User user) {
+        this.commentContent = commentContent;
+        this.commentedRecord = record;
         this.commentedUser = user;
     }
 }
