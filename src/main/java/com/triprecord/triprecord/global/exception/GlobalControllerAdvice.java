@@ -25,6 +25,12 @@ public class GlobalControllerAdvice {
         return ResponseEntity.ok(new ExceptionDTO("필요한 데이터가 모두 입력되지 않았습니다."));
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionDTO> unexpectedRuntimeException(final RuntimeException e){
+        log.error(String.format(ERROR_LOG, e.getClass().getSimpleName(), e.getMessage()));
+        return ResponseEntity.badRequest().body(new ExceptionDTO("unexpected runtime exception"));
+    }
+
     record ExceptionDTO(String message){
     }
 }
