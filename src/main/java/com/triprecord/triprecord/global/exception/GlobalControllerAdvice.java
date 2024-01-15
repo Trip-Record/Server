@@ -28,7 +28,7 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionDTO> unexpectedRuntimeException(final RuntimeException e){
         log.error(String.format(ERROR_LOG, e.getClass().getSimpleName(), e.getMessage()));
-        return ResponseEntity.badRequest().body(new ExceptionDTO("unexpected runtime exception"));
+        return ResponseEntity.badRequest().body(new ExceptionDTO("예기치 않은 런타임 에러입니다."));
     }
 
     record ExceptionDTO(String message){
