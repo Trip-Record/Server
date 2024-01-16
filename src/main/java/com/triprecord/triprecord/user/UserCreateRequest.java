@@ -1,13 +1,14 @@
 package com.triprecord.triprecord.user;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-
 public record UserCreateRequest(
-        String userEmail,
-        String userPassword,
-        String userNickname,
-        LocalDate userAge,
-        Long userBasicProfileId,
-        Long userTripStyleId
+        @Email @NotNull String userEmail,
+        @NotNull String userPassword,
+        @NotNull String userNickname,
+        @NotNull LocalDate userAge,
+        @NotNull Long userBasicProfileId,
+        @NotNull Long userTripStyleId
 ) {
 }

@@ -1,7 +1,9 @@
 package com.triprecord.triprecord.user;
 
+import jakarta.validation.constraints.NotNull;
+
 public record UserLoginRequest(
-        String userEmail,
-        String userPassword
+        @NotNull String userEmail,
+        @NotNull String userPassword
 ) {
 }
