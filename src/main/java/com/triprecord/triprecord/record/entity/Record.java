@@ -52,12 +52,12 @@ public class Record {
     private List<RecordImage> recordImages = new ArrayList<>();
 
     @Builder
-    public Record(String recordTitle, String recordContent, LocalDate tripStartDate, LocalDate tripEndDate, User user) {
+    public Record(String recordTitle, String recordContent, LocalDate tripStartDate, LocalDate tripEndDate, User createdUser) {
         this.recordTitle = recordTitle;
         this.recordContent = recordContent;
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
-        this.createdUser = user;
+        this.createdUser = createdUser;
     }
 
 }

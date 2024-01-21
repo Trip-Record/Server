@@ -23,15 +23,15 @@ public class RecordImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recordImgId;
 
-    private String recordImg;
+    private String recordImgUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "record_id")
     private Record linkedRecord;
 
     @Builder
-    public RecordImage(String recordImg, Record record) {
-        this.recordImg = recordImg;
-        this.linkedRecord = record;
+    public RecordImage(String imageURL, Record linkedRecord) {
+        this.recordImgUrl = imageURL;
+        this.linkedRecord = linkedRecord;
     }
 }
