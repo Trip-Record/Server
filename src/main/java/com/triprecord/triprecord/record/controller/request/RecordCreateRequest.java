@@ -11,7 +11,7 @@ public record RecordCreateRequest(
         @NotNull String recordContent,
         @NotNull LocalDate startDate,
         @NotNull LocalDate endDate,
-        @Size(min = 1, max = 3) List<Long> placeIds,
+        @NotNull @Size(min = 1, max = 3) List<Long> placeIds,
         @Size(max = 10) List<MultipartFile> recordImages
         ) {
 }
