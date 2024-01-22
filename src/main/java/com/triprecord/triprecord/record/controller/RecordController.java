@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/record")
+@RequestMapping("/records")
 public class RecordController {
 
     private final RecordService recordService;
