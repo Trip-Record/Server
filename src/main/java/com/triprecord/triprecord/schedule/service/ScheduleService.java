@@ -97,5 +97,4 @@ public class ScheduleService {
                 .build();
         scheduleDetailRepository.save(scheduleDetail);
     }
-
 }
