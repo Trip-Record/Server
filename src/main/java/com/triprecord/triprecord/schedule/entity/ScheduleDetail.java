@@ -1,5 +1,6 @@
 package com.triprecord.triprecord.schedule.entity;
 
+import com.triprecord.triprecord.schedule.dto.request.ScheduleDetailUpdateRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,5 +38,11 @@ public class ScheduleDetail {
         this.scheduleDetailDate = scheduleDetailDate;
         this.scheduleContent = content;
         this.linkedSchedule = schedule;
+    }
+
+    public void updateScheduleDetail(ScheduleDetailUpdateRequest updateRequest) {
+        if (!updateRequest.scheduleDetailContent().isBlank()) {
+            this.scheduleContent = updateRequest.scheduleDetailContent();
+        }
     }
 }
