@@ -32,8 +32,8 @@ public class RecordPlace {
     private Place recordPlace;
 
     @Builder
-    public RecordPlace(Record record, Place place) {
-        this.linkedRecord = record;
-        this.recordPlace = place;
+    public RecordPlace(Record linkedRecord, Place recordPlace) {
+        this.linkedRecord = linkedRecord;
+        this.recordPlace = recordPlace;
     }
 }
