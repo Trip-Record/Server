@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,30 +55,13 @@ public class ScheduleService {
                 .build();
         scheduleRepository.save(schedule);
 
-        for (Place place : places) {
-            SchedulePlace schedulePlace = SchedulePlace.builder()
-                    .schedule(schedule)
-                    .place(place)
-                    .build();
-            schedulePlaceRepository.save(schedulePlace);
-        }
+        places.stream()
+                .forEach(place -> createSchedulePlace(schedule, place));
 
         if (request.scheduleDetails().isEmpty()) return;
 
         request.scheduleDetails().stream()
-                .filter(scheduleDetail -> isNotBetweenInclusive(scheduleDetail.scheduleDetailDate(), request.scheduleStartDate(), request.scheduleEndDate()))
-                .findAny()
-                .ifPresent(scheduleDetail -> {
-                    throw new TripRecordException(ErrorCode.SCHEDULE_DETAIL_DATE_INVALID);
-                });
-
-        request.scheduleDetails().stream()
-                .map(scheduleDetail -> ScheduleDetail.builder()
-                        .schedule(schedule)
-                        .scheduleDetailDate(scheduleDetail.scheduleDetailDate())
-                        .content(scheduleDetail.scheduleDetailContent())
-                        .build())
-                .forEach(scheduleDetailRepository::save);
+                .forEach(scheduleDetail -> createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
     }
 
     @Transactional
@@ -136,14 +118,8 @@ public class ScheduleService {
             schedulePlaceRepository.deleteByLinkedScheduleAndPlace(schedule, getPlaceOrException(placeId));
         }
 
-        List<SchedulePlace> schedulePlaces = newPlaces.stream()
-                .map(place -> SchedulePlace.builder()
-                        .schedule(schedule)
-                        .place(place)
-                        .build())
-                .collect(Collectors.toList());
-
-        schedulePlaceRepository.saveAll(schedulePlaces);
+        newPlaces.stream()
+                .forEach(place -> createSchedulePlace(schedule, place));
     }
 
     private void updateScheduleDetail(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
@@ -151,9 +127,9 @@ public class ScheduleService {
 
         List<LocalDate> registeredScheduleDetailDates = scheduleDetailRepository.findScheduleDetailDatesBySchedule(schedule);
 
-        if (registeredScheduleDetailDates.isEmpty()) {
+        if (registeredScheduleDetailDates.isEmpty()) { // 기존 저장된 세부 일정이 없는 경우
             for (ScheduleDetailUpdateRequest scheduleDetailUpdateRequest : ScheduleRequest.scheduleDetails()) {
-                createScheduleDetail(schedule, scheduleDetailUpdateRequest);
+                createScheduleDetail(schedule, scheduleDetailUpdateRequest.scheduleDetailDate(), scheduleDetailUpdateRequest.scheduleDetailContent());
             }
         } else {
             // 수정된 일정 기간 내에 포함되지 않는 세부 일정 삭제
@@ -162,21 +138,33 @@ public class ScheduleService {
                     .forEach(date -> scheduleDetailRepository.deleteByScheduleDetailDateAndLinkedSchedule(date, schedule));
 
             for (ScheduleDetailUpdateRequest scheduleDetailRequest : ScheduleRequest.scheduleDetails()) {
-                if (registeredScheduleDetailDates.contains(scheduleDetailRequest.scheduleDetailDate())) {
+                if (registeredScheduleDetailDates.contains(scheduleDetailRequest.scheduleDetailDate())) { // 해당 일자 세부 일정이 이미 존재하는 경우 수정
                     ScheduleDetail scheduleDetail = scheduleDetailRepository.findByScheduleDetailDateAndLinkedSchedule(scheduleDetailRequest.scheduleDetailDate(), schedule);
                     scheduleDetail.updateScheduleDetail(scheduleDetailRequest);
-                } else {
-                    createScheduleDetail(schedule, scheduleDetailRequest);
+                } else { // 해당 일자 세부 일정이 존재하지 않는 경우 새로 생성
+                    createScheduleDetail(schedule, scheduleDetailRequest.scheduleDetailDate(), scheduleDetailRequest.scheduleDetailContent());
                 }
             }
         }
     }
 
-    private void createScheduleDetail(Schedule schedule, ScheduleDetailUpdateRequest scheduleDetailRequest) {
+    private void createSchedulePlace(Schedule schedule, Place place) {
+        SchedulePlace schedulePlace = SchedulePlace.builder()
+                .schedule(schedule)
+                .place(place)
+                .build();
+        schedulePlaceRepository.save(schedulePlace);
+    }
+
+    private void createScheduleDetail(Schedule schedule, LocalDate scheduleDetailDate, String scheduleDetailContent) {
+        if (isNotBetweenInclusive(scheduleDetailDate, schedule.getScheduleStartDate(), schedule.getScheduleEndDate())) {
+            throw new TripRecordException(ErrorCode.SCHEDULE_DETAIL_DATE_INVALID);
+        }
+
         ScheduleDetail scheduleDetail = ScheduleDetail.builder()
                 .schedule(schedule)
-                .scheduleDetailDate(scheduleDetailRequest.scheduleDetailDate())
-                .content(scheduleDetailRequest.scheduleDetailContent())
+                .scheduleDetailDate(scheduleDetailDate)
+                .content(scheduleDetailContent)
                 .build();
         scheduleDetailRepository.save(scheduleDetail);
     }
