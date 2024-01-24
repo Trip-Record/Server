@@ -53,22 +53,10 @@ public class ScheduleService {
                 .build();
         scheduleRepository.save(schedule);
 
-        for (Place place : places) {
-            SchedulePlace schedulePlace = SchedulePlace.builder()
-                    .schedule(schedule)
-                    .place(place)
-                    .build();
-            schedulePlaceRepository.save(schedulePlace);
-        }
+        places.stream()
+                .forEach(place -> createSchedulePlace(schedule, place));
 
         if (request.scheduleDetails().isEmpty()) return;
-
-        request.scheduleDetails().stream()
-                .filter(scheduleDetail -> isNotBetweenInclusive(scheduleDetail.scheduleDetailDate(), request.scheduleStartDate(), request.scheduleEndDate()))
-                .findAny()
-                .ifPresent(scheduleDetail -> {
-                    throw new TripRecordException(ErrorCode.SCHEDULE_DETAIL_DATE_INVALID);
-                });
 
         request.scheduleDetails().stream()
                 .forEach(scheduleDetail -> createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
@@ -89,7 +77,19 @@ public class ScheduleService {
                 || !(dateToCheck.isEqual(endDate) || dateToCheck.isBefore(endDate));
     }
 
+    private void createSchedulePlace(Schedule schedule, Place place) {
+        SchedulePlace schedulePlace = SchedulePlace.builder()
+                .schedule(schedule)
+                .place(place)
+                .build();
+        schedulePlaceRepository.save(schedulePlace);
+    }
+
     private void createScheduleDetail(Schedule schedule, LocalDate scheduleDetailDate, String scheduleDetailContent) {
+        if (isNotBetweenInclusive(scheduleDetailDate, schedule.getScheduleStartDate(), schedule.getScheduleEndDate())) {
+            throw new TripRecordException(ErrorCode.SCHEDULE_DETAIL_DATE_INVALID);
+        }
+
         ScheduleDetail scheduleDetail = ScheduleDetail.builder()
                 .schedule(schedule)
                 .scheduleDetailDate(scheduleDetailDate)
