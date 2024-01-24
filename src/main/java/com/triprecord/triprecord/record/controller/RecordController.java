@@ -1,6 +1,7 @@
 package com.triprecord.triprecord.record.controller;
 
 
+import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
@@ -22,9 +23,11 @@ public class RecordController {
     private final RecordService recordService;
 
     @PostMapping()
-    public ResponseEntity<Map<String, String>> createRecord(Authentication authentication, @Valid RecordCreateRequest request){
+    public ResponseEntity<ResponseMessage> createRecord(Authentication authentication, @Valid RecordCreateRequest request){
         recordService.createRecord(Long.valueOf(authentication.getName()), request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message","기록 생성에 성공했습니다."));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("기록 생성에 성공했습니다."));
     }
+
+
 
 }
