@@ -71,12 +71,7 @@ public class ScheduleService {
                 });
 
         request.scheduleDetails().stream()
-                .map(scheduleDetail -> ScheduleDetail.builder()
-                        .schedule(schedule)
-                        .scheduleDetailDate(scheduleDetail.scheduleDetailDate())
-                        .content(scheduleDetail.scheduleDetailContent())
-                        .build())
-                .forEach(scheduleDetailRepository::save);
+                .forEach(scheduleDetail -> createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
     }
 
     private User getUserOrException(Long userId) {
@@ -92,6 +87,15 @@ public class ScheduleService {
     private static boolean isNotBetweenInclusive(LocalDate dateToCheck, LocalDate startDate, LocalDate endDate) {
         return !(dateToCheck.isEqual(startDate) || dateToCheck.isAfter(startDate))
                 || !(dateToCheck.isEqual(endDate) || dateToCheck.isBefore(endDate));
+    }
+
+    private void createScheduleDetail(Schedule schedule, LocalDate scheduleDetailDate, String scheduleDetailContent) {
+        ScheduleDetail scheduleDetail = ScheduleDetail.builder()
+                .schedule(schedule)
+                .scheduleDetailDate(scheduleDetailDate)
+                .content(scheduleDetailContent)
+                .build();
+        scheduleDetailRepository.save(scheduleDetail);
     }
 
 }
