@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.controller.dto.response;
 
 import com.triprecord.triprecord.user.entity.User;
 import jakarta.validation.constraints.NotNull;

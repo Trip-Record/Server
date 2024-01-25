@@ -1,10 +1,14 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.service;
 
 import com.triprecord.triprecord.basicproflie.BasicProfileRepository;
 import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
+import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.controller.dto.response.UserInfoResponse;
+import com.triprecord.triprecord.user.repository.TripStyleRepository;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
