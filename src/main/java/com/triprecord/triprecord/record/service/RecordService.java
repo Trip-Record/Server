@@ -7,6 +7,7 @@ import com.triprecord.triprecord.record.entity.RecordPlace;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
+import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import java.util.List;
@@ -21,14 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class RecordService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RecordRepository recordRepository;
     private final RecordImageService recordImageService;
     private final RecordPlaceService recordPlaceService;
 
     @Transactional
     public void createRecord(Long userId, RecordCreateRequest request){
-        User createdUser = getUserOrException(userId);
+        User createdUser = userService.getUserOrException(userId);
         Record record = Record.builder()
                 .recordTitle(request.recordTitle())
                 .recordContent(request.recordContent())
@@ -52,11 +53,6 @@ public class RecordService {
         for(MultipartFile image : images){
             recordImageService.uploadRecordImage(image, linkedRecord);
         }
-    }
-
-    private User getUserOrException(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

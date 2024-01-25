@@ -58,4 +58,9 @@ public class UserService {
 
         return jwtProvider.generateToken(userAuthentication);
     }
+
+    public User getUserOrException(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() ->
+                new TripRecordException(ErrorCode.USER_NOT_FOUND));
+    }
 }
