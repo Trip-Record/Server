@@ -2,28 +2,20 @@ package com.triprecord.triprecord.schedule.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
-import com.triprecord.triprecord.location.PlaceRepository;
+import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
-import com.triprecord.triprecord.schedule.dto.request.ScheduleDetailUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.entity.Schedule;
-import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
-import com.triprecord.triprecord.schedule.entity.SchedulePlace;
-import com.triprecord.triprecord.schedule.repository.ScheduleDetailRepository;
-import com.triprecord.triprecord.schedule.repository.SchedulePlaceRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
-import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +23,15 @@ import java.util.stream.Collectors;
 public class ScheduleService {
 
     private final UserService userService;
+    private final PlaceService placeService;
+    private final SchedulePlaceService schedulePlaceService;
+    private final ScheduleDetailService scheduleDetailService;
     private final ScheduleRepository scheduleRepository;
-    private final PlaceRepository placeRepository;
-    private final UserRepository userRepository;
-    private final SchedulePlaceRepository schedulePlaceRepository;
-    private final ScheduleDetailRepository scheduleDetailRepository;
+
+    public Schedule getScheduleOrException(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId).orElseThrow(() ->
+                new TripRecordException(ErrorCode.SCHEDULE_NOT_FOUND));
+    }
 
     @Transactional
     public void createSchedule(Long userId, ScheduleCreateRequest request) {
@@ -43,7 +39,7 @@ public class ScheduleService {
 
         List<Place> places = new ArrayList<>();
         for (Long placeId : request.placeIds()) {
-            places.add(getPlaceOrException(placeId));
+            places.add(placeService.getPlaceOrException(placeId));
         }
 
         if (request.scheduleStartDate().isAfter(request.scheduleEndDate())) {
@@ -59,12 +55,12 @@ public class ScheduleService {
         scheduleRepository.save(schedule);
 
         places.stream()
-                .forEach(place -> createSchedulePlace(schedule, place));
+                .forEach(place -> schedulePlaceService.createSchedulePlace(schedule, place));
 
         if (request.scheduleDetails().isEmpty()) return;
 
         request.scheduleDetails().stream()
-                .forEach(scheduleDetail -> createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+                .forEach(scheduleDetail -> scheduleDetailService.createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
     }
 
     @Transactional
@@ -82,95 +78,16 @@ public class ScheduleService {
         updateScheduleDetail(schedule, ScheduleRequest);
     }
 
-    private Place getPlaceOrException(Long placeId) {
-        return placeRepository.findById(placeId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.PLACE_NOT_FOUND));
-    }
-
-    private Schedule getScheduleOrException(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.SCHEDULE_NOT_FOUND));
-    }
-
-    private boolean isNotBetweenInclusive(LocalDate dateToCheck, LocalDate startDate, LocalDate endDate) {
-        return !(dateToCheck.isEqual(startDate) || dateToCheck.isAfter(startDate))
-                || !(dateToCheck.isEqual(endDate) || dateToCheck.isBefore(endDate));
-    }
-
-    private void createSchedulePlace(Schedule schedule, Place place) {
-        SchedulePlace schedulePlace = SchedulePlace.builder()
-                .schedule(schedule)
-                .place(place)
-                .build();
-        schedulePlaceRepository.save(schedulePlace);
-    }
-
-    private void createScheduleDetail(Schedule schedule, LocalDate scheduleDetailDate, String scheduleDetailContent) {
-        if (isNotBetweenInclusive(scheduleDetailDate, schedule.getScheduleStartDate(), schedule.getScheduleEndDate())) {
-            throw new TripRecordException(ErrorCode.SCHEDULE_DETAIL_DATE_INVALID);
-        }
-
-        ScheduleDetail scheduleDetail = ScheduleDetail.builder()
-                .schedule(schedule)
-                .scheduleDetailDate(scheduleDetailDate)
-                .content(scheduleDetailContent)
-                .build();
-        scheduleDetailRepository.save(scheduleDetail);
-    }
-
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
         if (ScheduleRequest.placeIds() == null || ScheduleRequest.placeIds().isEmpty()) return;
 
-        List<Place> newPlaces = new ArrayList<>();
-
-        List<Long> registeredPlaceIds = schedulePlaceRepository.findPlaceIdsBySchedule(schedule);
-
-        for (Long newPlaceId : ScheduleRequest.placeIds()) {
-            if (registeredPlaceIds.contains(newPlaceId)) {
-                registeredPlaceIds.remove(newPlaceId);
-                continue;
-            }
-            newPlaces.add(getPlaceOrException(newPlaceId));
-        }
-
-        for (Long placeId : registeredPlaceIds) {
-            schedulePlaceRepository.deleteByLinkedScheduleAndPlace(schedule, getPlaceOrException(placeId));
-        }
-
-        List<SchedulePlace> schedulePlaces = newPlaces.stream()
-                .map(place -> SchedulePlace.builder()
-                        .schedule(schedule)
-                        .place(place)
-                        .build())
-                .collect(Collectors.toList());
-
-        schedulePlaceRepository.saveAll(schedulePlaces);
+        schedulePlaceService.updateSchedulePlace(schedule, ScheduleRequest);
     }
 
     private void updateScheduleDetail(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
         if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) return;
 
-        List<LocalDate> registeredScheduleDetailDates = scheduleDetailRepository.findScheduleDetailDatesBySchedule(schedule);
-
-        if (registeredScheduleDetailDates.isEmpty()) {
-            for (ScheduleDetailUpdateRequest scheduleDetailUpdateRequest : ScheduleRequest.scheduleDetails()) {
-                createScheduleDetail(schedule, scheduleDetailUpdateRequest.scheduleDetailDate(), scheduleDetailUpdateRequest.scheduleDetailContent());
-            }
-        } else {
-            // 수정된 일정 기간 내에 포함되지 않는 세부 일정 삭제
-            registeredScheduleDetailDates.stream()
-                    .filter(date -> isNotBetweenInclusive(date, ScheduleRequest.scheduleStartDate(), ScheduleRequest.scheduleEndDate()))
-                    .forEach(date -> scheduleDetailRepository.deleteByScheduleDetailDateAndLinkedSchedule(date, schedule));
-
-            for (ScheduleDetailUpdateRequest scheduleDetailRequest : ScheduleRequest.scheduleDetails()) {
-                if (registeredScheduleDetailDates.contains(scheduleDetailRequest.scheduleDetailDate())) {
-                    ScheduleDetail scheduleDetail = scheduleDetailRepository.findByScheduleDetailDateAndLinkedSchedule(scheduleDetailRequest.scheduleDetailDate(), schedule);
-                    scheduleDetail.updateScheduleDetail(scheduleDetailRequest);
-                } else {
-                    createScheduleDetail(schedule, scheduleDetailRequest.scheduleDetailDate(), scheduleDetailRequest.scheduleDetailContent());
-                }
-            }
-        }
+        scheduleDetailService.updateScheduleDetail(schedule, ScheduleRequest);
     }
 
 }
