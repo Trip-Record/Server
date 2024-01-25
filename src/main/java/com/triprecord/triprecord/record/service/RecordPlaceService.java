@@ -4,6 +4,7 @@ package com.triprecord.triprecord.record.service;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceRepository;
+import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordPlace;
@@ -16,12 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecordPlaceService {
 
-    private final PlaceRepository placeRepository;
+    private  final PlaceService placeService;
     private final RecordPlaceRepository recordPlaceRepository;
 
     @Transactional
     public void uploadRecordPlace(Record record, Long placeId){
-        Place linkedPlace = getPlaceOrException(placeId);
+        Place linkedPlace = placeService.getPlaceOrException(placeId);
         RecordPlace recordPlace = RecordPlace.builder()
                 .recordPlace(linkedPlace)
                 .linkedRecord(record)
@@ -29,8 +30,4 @@ public class RecordPlaceService {
         recordPlaceRepository.save(recordPlace);
     }
 
-    private Place getPlaceOrException(Long placeId) {
-        return placeRepository.findByPlaceId(placeId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.PLACE_NOT_FOUNT));
-    }
 }
