@@ -1,5 +1,6 @@
 package com.triprecord.triprecord.schedule.controller;
 
+import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
@@ -25,21 +24,21 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<Map<String, String>> createSchedule(Authentication authentication, @RequestBody @Valid ScheduleCreateRequest request) {
+    public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication, @RequestBody @Valid ScheduleCreateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.createSchedule(userId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(Map.of("message", "일정 생성에 성공했습니다."));
+                .body(new ResponseMessage("일정 생성에 성공했습니다."));
     }
 
     @PatchMapping("/{scheduleId}")
-    public ResponseEntity<Map<String, String>> updateSchedule(Authentication authentication, @PathVariable @Valid Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
+    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable @Valid Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.updateSchedule(userId, scheduleId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(Map.of("message", "일정 수정에 성공했습니다."));
+                .body(new ResponseMessage("일정 수정에 성공했습니다."));
     }
 
 }
