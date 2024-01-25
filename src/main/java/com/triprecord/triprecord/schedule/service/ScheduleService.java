@@ -13,6 +13,7 @@ import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleDetailRepository;
 import com.triprecord.triprecord.schedule.repository.SchedulePlaceRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ScheduleService {
 
+    private final UserService userService;
     private final ScheduleRepository scheduleRepository;
     private final PlaceRepository placeRepository;
     private final UserRepository userRepository;
@@ -37,7 +39,7 @@ public class ScheduleService {
 
     @Transactional
     public void createSchedule(Long userId, ScheduleCreateRequest request) {
-        User user = getUserOrException(userId);
+        User user = userService.getUserOrException(userId);
 
         List<Place> places = new ArrayList<>();
         for (Long placeId : request.placeIds()) {
@@ -67,7 +69,7 @@ public class ScheduleService {
 
     @Transactional
     public void updateSchedule(Long userId, Long scheduleId, ScheduleUpdateRequest ScheduleRequest) {
-        User user = getUserOrException(userId);
+        User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
         if (schedule.getCreatedUser() != user) {
             throw new TripRecordException(ErrorCode.UNAUTHORIZED_ACCESS);
@@ -78,11 +80,6 @@ public class ScheduleService {
         updateSchedulePlace(schedule, ScheduleRequest);
 
         updateScheduleDetail(schedule, ScheduleRequest);
-    }
-
-    private User getUserOrException(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.USER_NOT_FOUND));
     }
 
     private Place getPlaceOrException(Long placeId) {
