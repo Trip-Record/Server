@@ -42,13 +42,16 @@ public class ScheduleDetailService {
         List<LocalDate> registeredScheduleDetailDates = scheduleDetailRepository.findScheduleDetailDatesBySchedule(schedule);
 
         if (registeredScheduleDetailDates.isEmpty()) { // 기존 저장된 세부 일정이 없는 경우
-            for (ScheduleDetailUpdateRequest scheduleDetailUpdateRequest : ScheduleRequest.scheduleDetails()) {
-                createScheduleDetail(schedule, scheduleDetailUpdateRequest.scheduleDetailDate(), scheduleDetailUpdateRequest.scheduleDetailContent());
-            }
+            ScheduleRequest.scheduleDetails().stream()
+                    .forEach(scheduleDetailRequest -> createScheduleDetail(schedule, scheduleDetailRequest.scheduleDetailDate(), scheduleDetailRequest.scheduleDetailContent()));
         } else {
-            // 수정된 일정 기간 내에 포함되지 않는 세부 일정 삭제
+            // 수정된 일정 기간 내에 포함되지 않는 기존 세부 일정 삭제
             registeredScheduleDetailDates.stream()
-                    .filter(date -> isNotBetweenInclusive(date, ScheduleRequest.scheduleStartDate(), ScheduleRequest.scheduleEndDate()))
+                    .filter(date -> isNotBetweenInclusive(
+                            date,
+                            ScheduleRequest.scheduleStartDate() == null ? schedule.getScheduleStartDate() : ScheduleRequest.scheduleStartDate(),
+                            ScheduleRequest.scheduleStartDate() == null ? schedule.getScheduleEndDate() : ScheduleRequest.scheduleEndDate()
+                    ))
                     .forEach(date -> scheduleDetailRepository.deleteByScheduleDetailDateAndLinkedSchedule(date, schedule));
 
             for (ScheduleDetailUpdateRequest scheduleDetailRequest : ScheduleRequest.scheduleDetails()) {
