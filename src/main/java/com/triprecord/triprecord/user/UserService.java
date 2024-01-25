@@ -55,8 +55,41 @@ public class UserService {
         return jwtProvider.generateToken(userAuthentication);
     }
 
+    public UserInfoResponse findUserData(Long userId){
+        User user = getUserOrException(userId);
+        Long recordTotal = countRecords(userId);
+        Long scheduleTotal = countSchedules(userId);
+        Long placeTotal = countPlaces(userId);
+        Long likeTotal = countLikes(userId);
+
+        return UserInfoResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
+    }
+
+    public Long countLikes(Long userId){
+        User user = getUserOrException(userId);
+        Long totalLikes = userRepository.recordLikes(user) + userRepository.scheduleLikes(user);
+
+        return totalLikes;
+    }
+
+    public Long countPlaces (Long userId){
+        User user = getUserOrException(userId);
+        return userRepository.placeCount(user);
+    }
+
+    public Long countRecords (Long userId){
+        User user = getUserOrException(userId);
+        return userRepository.recordCount(user);
+    }
+
+    public Long countSchedules(Long userId){
+        User user = getUserOrException(userId);
+        return userRepository.scheduleCount(user);
+    }
+
     public User getUserOrException(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new TripRecordException(ErrorCode.USER_NOT_FOUND));
     }
+
 }
