@@ -80,8 +80,8 @@ public class ScheduleService {
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
         Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
-        Long scheduleLikeCount = getScheduleLikeCount(schedule);
-        Long scheduleCommentCount = getScheduleCommentCount(schedule);
+        Long scheduleLikeCount = schedule.getLikes().stream().count();
+        Long scheduleCommentCount = schedule.getComments().stream().count();
 
         return ScheduleGetResponse.of(
                 createdUser,
@@ -128,20 +128,6 @@ public class ScheduleService {
                 .content(scheduleDetailContent)
                 .build();
         scheduleDetailRepository.save(scheduleDetail);
-    }
-
-    private Long getScheduleLikeCount(Schedule schedule) {
-        if (schedule.getLikes().isEmpty()) {
-            return 0L;
-        }
-        return schedule.getLikes().stream().count();
-    }
-
-    private Long getScheduleCommentCount(Schedule schedule) {
-        if (schedule.getComments().isEmpty()) {
-            return 0L;
-        }
-        return schedule.getComments().stream().count();
     }
 
 }
