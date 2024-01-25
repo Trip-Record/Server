@@ -5,12 +5,14 @@ import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceRepository;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleDetailRepository;
 import com.triprecord.triprecord.schedule.repository.SchedulePlaceRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -31,6 +35,11 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final SchedulePlaceRepository schedulePlaceRepository;
     private final ScheduleDetailRepository scheduleDetailRepository;
+
+    public Schedule getScheduleOrException(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId).orElseThrow(() ->
+                new TripRecordException(ErrorCode.DUPLICATE_EMAIL));
+    }
 
     @Transactional
     public void createSchedule(Long userId, ScheduleCreateRequest request) {
@@ -60,6 +69,29 @@ public class ScheduleService {
 
         request.scheduleDetails().stream()
                 .forEach(scheduleDetail -> createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+    }
+
+    public ScheduleGetResponse getSchedule(Long scheduleId) {
+        Schedule schedule = getScheduleOrException(scheduleId);
+        User createdUser = schedule.getCreatedUser();
+        TripStyle createdUserTripStyle = schedule.getCreatedUser().getUserTripStyle();
+        List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
+
+        List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
+        Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
+
+        Long scheduleLikeCount = getScheduleLikeCount(schedule);
+        Long scheduleCommentCount = getScheduleCommentCount(schedule);
+
+        return ScheduleGetResponse.of(
+                createdUser,
+                createdUserTripStyle,
+                schedule,
+                schedulePlaces,
+                scheduleDetails,
+                scheduleLikeCount,
+                scheduleCommentCount
+        );
     }
 
     private User getUserOrException(Long userId) {
@@ -96,6 +128,20 @@ public class ScheduleService {
                 .content(scheduleDetailContent)
                 .build();
         scheduleDetailRepository.save(scheduleDetail);
+    }
+
+    private Long getScheduleLikeCount(Schedule schedule) {
+        if (schedule.getLikes().isEmpty()) {
+            return 0L;
+        }
+        return schedule.getLikes().stream().count();
+    }
+
+    private Long getScheduleCommentCount(Schedule schedule) {
+        if (schedule.getComments().isEmpty()) {
+            return 0L;
+        }
+        return schedule.getComments().stream().count();
     }
 
 }
