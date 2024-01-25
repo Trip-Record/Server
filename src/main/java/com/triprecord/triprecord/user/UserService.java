@@ -5,10 +5,8 @@ import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
-import com.triprecord.triprecord.user.repository.TripStyleRepository;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
-import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final BasicProfileRepository basicProfileRepository;
-    private final TripStyleRepository tripStyleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -41,7 +38,6 @@ public class UserService {
                 .userAge(userCreateRequest.userAge())
                 .userProfileImg(basicProfileRepository.findById(userCreateRequest.userBasicProfileId()).get().getBasicProfileImg())
                 .userNickname(userCreateRequest.userNickname())
-                .tripStyle(tripStyleRepository.findById(userCreateRequest.userTripStyleId()).get())
                 .build();
 
         userRepository.save(newUser);
