@@ -3,16 +3,14 @@ package com.triprecord.triprecord.schedule.dto.response;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
+import com.triprecord.triprecord.user.dto.response.UserProfile;
 import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 
 import java.util.List;
 
 public record ScheduleGetResponse(
-        String createdUserNickname,
-        String createdUserProfileImg,
-        String createdUserTripStyleName,
-        String createdUserTripStyleImg,
+        UserProfile userProfile,
         Long scheduleId,
         String scheduleTitle,
         List<SchedulePlaceGetResponse> schedulePlaces,
@@ -30,10 +28,7 @@ public record ScheduleGetResponse(
                                          Long scheduleLikeCount,
                                          Long scheduleCommentCount) {
         return new ScheduleGetResponse(
-                user.getUserNickname(),
-                user.getUserProfileImg(),
-                userTripStyle.getTripStyleName(),
-                userTripStyle.getTripStyleImg(),
+                new UserProfile(user.getUserNickname(), user.getUserProfileImg(), userTripStyle.getTripStyleName(), userTripStyle.getTripStyleImg()),
                 schedule.getScheduleId(),
                 schedule.getScheduleTitle(),
                 schedulePlaces.stream()
