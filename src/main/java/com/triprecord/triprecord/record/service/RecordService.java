@@ -10,6 +10,7 @@ import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class RecordService {
     @Transactional
     public void createRecord(Long userId, RecordCreateRequest request){
         User createdUser = userService.getUserOrException(userId);
+        checkDateValid(request.startDate(), request.endDate());
         Record record = Record.builder()
                 .recordTitle(request.recordTitle())
                 .recordContent(request.recordContent())
@@ -46,6 +48,11 @@ public class RecordService {
         for(Long placeId : placeIds){
             recordPlaceService.uploadRecordPlace(linkedRecord, placeId);
         }
+
+    private void checkDateValid(LocalDate startDate, LocalDate endDate){
+        if(endDate.isBefore(startDate)) throw new TripRecordException(ErrorCode.INVALID_DATE);
+    }
+
     }
 
     private void uploadImage(List<MultipartFile> images, Record linkedRecord){
