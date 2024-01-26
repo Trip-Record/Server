@@ -41,7 +41,7 @@ public class RecordService {
                 .build();
         recordRepository.save(record);
         uploadPlace(request.placeIds(), record);
-        uploadImage(request.recordImages(), record);
+        recordImageService.uploadRecordImages(record, request.recordImages());
     }
 
     private void uploadPlace(List<Long> placeIds, Record linkedRecord){
@@ -53,13 +53,13 @@ public class RecordService {
         if(endDate.isBefore(startDate)) throw new TripRecordException(ErrorCode.INVALID_DATE);
     }
 
+    private void modifyImage(Record record, List<String> deleteImages, List<MultipartFile> addImages){
+        if(deleteImages==null && addImages==null) return;
+        recordImageService.checkImageSizeValid(record, deleteImages, addImages);
+        recordImageService.deleteRecordImages(record, deleteImages);
+        recordImageService.uploadRecordImages(record, addImages);
     }
 
-    private void uploadImage(List<MultipartFile> images, Record linkedRecord){
-        if(images==null) return;
-        for(MultipartFile image : images){
-            recordImageService.uploadRecordImage(image, linkedRecord);
-        }
     }
 
 }
