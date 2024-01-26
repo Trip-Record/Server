@@ -1,5 +1,6 @@
 package com.triprecord.triprecord.record.service;
 
+
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
@@ -7,7 +8,7 @@ import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
-import com.triprecord.triprecord.user.UserService;
+import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;

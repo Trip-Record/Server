@@ -1,14 +1,22 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
+import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
+import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 import java.util.Map;
 
@@ -33,5 +41,10 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(Map.of("Authorization", token));
+    }
+
+    @GetMapping("/informations")
+    public ResponseEntity<UserInfoGetResponse> userInfo(Authentication authentication){
+        return ResponseEntity.ok().body(userService.getUserInfo(Long.valueOf(authentication.getName())));
     }
 }

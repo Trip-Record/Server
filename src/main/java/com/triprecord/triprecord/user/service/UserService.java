@@ -1,10 +1,18 @@
-package com.triprecord.triprecord.user;
+package com.triprecord.triprecord.user.service;
 
 import com.triprecord.triprecord.basicproflie.BasicProfileRepository;
 import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.record.repository.RecordLikeRepository;
+import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
+import com.triprecord.triprecord.record.repository.RecordRepository;
+import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
+import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
+import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +29,11 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
+    private final RecordRepository recordRepository;
+    private final RecordPlaceRepository recordPlaceRepository;
+    private final RecordLikeRepository recordLikeRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -55,8 +68,35 @@ public class UserService {
         return jwtProvider.generateToken(userAuthentication);
     }
 
+    public UserInfoGetResponse getUserInfo(Long userId){
+        User user = getUserOrException(userId);
+        Long recordTotal = getRecordsCount(user);
+        Long scheduleTotal = getSchedulesCount(user);
+        Long placeTotal = getPlacesCount(user);
+        Long likeTotal = getLikesCount(user);
+
+        return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
+    }
+
+    public Long getLikesCount(User user){
+        return recordLikeRepository.countRecordLikeByLikedUser(user) + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
+    }
+
+    public Long getPlacesCount (User user){
+        return recordPlaceRepository.placeCount(user);
+    }
+
+    public Long getRecordsCount (User user){
+        return recordRepository.countRecordByCreatedUser(user);
+    }
+
+    public Long getSchedulesCount(User user){
+        return scheduleRepository.countScheduleByCreatedUser(user);
+    }
+
     public User getUserOrException(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new TripRecordException(ErrorCode.USER_NOT_FOUND));
     }
+
 }
