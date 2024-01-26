@@ -33,7 +33,7 @@ public class RecordController {
     @DeleteMapping("/{recordId}")
     public ResponseEntity<ResponseMessage> deleteRecord(Authentication authentication, @PathVariable Long recordId){
         recordService.deleteRecord(Long.valueOf(authentication.getName()), recordId);
-        return ResponseEntity.ok(new ResponseMessage("기록 삭제에 성공했습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 삭제에 성공했습니다."));
     }
 
 
