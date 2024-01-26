@@ -13,6 +13,7 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     FILE_READ_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 읽기에 실패했습니다."),
+    PLACE_NOT_FOUNT(HttpStatus.NOT_FOUND, "일치하는 장소가 없습니다."),
     RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "기록을 찾을 수 없습니다."),
     INVALID_PERMISSION(HttpStatus.UNAUTHORIZED,"권한이 없습니다."),
 
