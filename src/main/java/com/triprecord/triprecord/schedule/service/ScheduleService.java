@@ -98,9 +98,7 @@ public class ScheduleService {
     public void updateSchedule(Long userId, Long scheduleId, ScheduleUpdateRequest ScheduleRequest) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
-        if (schedule.getCreatedUser() != user) {
-            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
-        }
+        checkSameUser(schedule.getCreatedUser(), user);
 
         schedule.updateSchedule(ScheduleRequest);
 
@@ -113,9 +111,7 @@ public class ScheduleService {
     public void deleteSchedule(Long userId, Long scheduleId) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
-        if (user != schedule.getCreatedUser()) {
-            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
-        }
+        checkSameUser(schedule.getCreatedUser(), user);
 
         scheduleRepository.delete(schedule);
     }
@@ -130,6 +126,12 @@ public class ScheduleService {
         if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) return;
 
         scheduleDetailService.updateScheduleDetail(schedule, ScheduleRequest);
+    }
+
+    private void checkSameUser(User createdUser, User user) {
+        if (createdUser != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
     }
 
 }
