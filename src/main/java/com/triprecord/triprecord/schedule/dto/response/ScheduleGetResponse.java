@@ -28,7 +28,7 @@ public record ScheduleGetResponse(
                                          Long scheduleLikeCount,
                                          Long scheduleCommentCount) {
         return new ScheduleGetResponse(
-                new UserProfile(user.getUserNickname(), user.getUserProfileImg(), userTripStyle.getTripStyleName(), userTripStyle.getTripStyleImg()),
+                UserProfile.of(user),
                 schedule.getScheduleId(),
                 schedule.getScheduleTitle(),
                 schedulePlaces.stream()
