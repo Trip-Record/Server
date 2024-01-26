@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface RecordImageRepository extends JpaRepository<RecordImage, Long> {
 
     long countByLinkedRecord(Record linkedRecord);
-    Optional<RecordImage> findAllByLinkedRecordAndRecordImgUrl(Record linkedRecord, String recordImgUrl);
+    Optional<RecordImage> findByLinkedRecordAndRecordImgUrl(Record linkedRecord, String recordImgUrl);
     List<RecordImage> findAllByLinkedRecord(Record linkedRecord);
 }

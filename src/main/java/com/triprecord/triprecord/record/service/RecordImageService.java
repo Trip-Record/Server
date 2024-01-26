@@ -67,7 +67,7 @@ public class RecordImageService {
 
 
     private RecordImage getRecordImageOrException(Record record, String imageURL){
-        return recordImageRepository.findAllByLinkedRecordAndRecordImgUrl(record, imageURL).orElseThrow(()->
+        return recordImageRepository.findByLinkedRecordAndRecordImgUrl(record, imageURL).orElseThrow(()->
                 new TripRecordException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
