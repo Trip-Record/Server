@@ -36,7 +36,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{scheduleId}")
-    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable @Valid Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
+    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.updateSchedule(userId, scheduleId, request);
         return ResponseEntity
@@ -53,7 +53,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication, @PathVariable @Valid Long scheduleId) {
+    public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication, @PathVariable Long scheduleId) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.deleteSchedule(userId, scheduleId);
         return ResponseEntity
