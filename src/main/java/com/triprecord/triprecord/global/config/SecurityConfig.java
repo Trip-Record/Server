@@ -24,6 +24,20 @@ public class SecurityConfig {
     private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    private final String[] permitAllPaths = {
+            "/users/login",
+            "/users/login/naver",
+            "/users/signup",
+            "/ranks/months",
+            "/ranks/seasons",
+            "/records",
+            "/records/{recordId}",
+            "/records/{recordId}/comments",
+            "/schedules",
+            "/schedules/{scheduleId}",
+            "/schedules/{scheduleId}/comments"
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             /*
@@ -46,7 +60,7 @@ public class SecurityConfig {
             로그인 API 요청은 인증 인가 없이도 요청이 가능하도록 설정
              */
         http.authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/users/login/**", "/users/signup/**").permitAll();
+                    auth.requestMatchers(permitAllPaths).permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
