@@ -1,7 +1,7 @@
 package com.triprecord.triprecord.schedule.entity;
 
 
-import com.triprecord.triprecord.global.util.EntityBaseTime;
+import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -12,13 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -57,6 +58,12 @@ public class Schedule {
         this.scheduleStartDate = startDate;
         this.scheduleEndDate = endDate;
         this.createdUser = user;
+    }
+
+    public void updateSchedule(ScheduleUpdateRequest request) {
+        if (!request.scheduleTitle().isBlank()) this.scheduleTitle = request.scheduleTitle();
+        if (request.scheduleStartDate() != null) this.scheduleStartDate = request.scheduleStartDate();
+        if (request.scheduleEndDate() != null) this.scheduleEndDate = request.scheduleEndDate();
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public record ScheduleCreateRequest(
         @NotBlank String scheduleTitle,
-        @NotEmpty @Size(min = 1, max = 3) List<Long> schedulePlaceIds,
+        @NotEmpty @Size(min = 1, max = 3) List<Long> placeIds,
         @NotNull LocalDate scheduleStartDate,
         @NotNull LocalDate scheduleEndDate,
         @Valid @NotNull List<ScheduleDetailCreateRequest> scheduleDetails

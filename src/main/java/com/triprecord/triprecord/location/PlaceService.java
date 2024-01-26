@@ -13,6 +13,6 @@ public class PlaceService {
 
     public Place getPlaceOrException(Long placeId) {
         return placeRepository.findByPlaceId(placeId).orElseThrow(() ->
-                new TripRecordException(ErrorCode.PLACE_NOT_FOUNT));
+                new TripRecordException(ErrorCode.PLACE_NOT_FOUND));
     }
 }
