@@ -2,10 +2,9 @@ package com.triprecord.triprecord.record.controller.response;
 
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.user.dto.response.UserProfile;
-import com.triprecord.triprecord.user.entity.User;
 import java.time.LocalDate;
 
-public record RecordResponse(
+public record RecordDataResponse(
         UserProfile recordUserProfile,
         Long recordId,
         String recordTitle,
@@ -16,8 +15,8 @@ public record RecordResponse(
         Long commentCount
 
 ) {
-    public static RecordResponse fromRecord(Record record, Long likeCount, Long commentCount){
-        return new RecordResponse(
+    public static RecordDataResponse fromRecord(Record record, Long likeCount, Long commentCount){
+        return new RecordDataResponse(
                 UserProfile.of(record.getCreatedUser()),
                 record.getRecordId(),
                 record.getRecordTitle(),

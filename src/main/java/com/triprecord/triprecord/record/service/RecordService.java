@@ -4,7 +4,7 @@ package com.triprecord.triprecord.record.service;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
-import com.triprecord.triprecord.record.controller.response.RecordResponse;
+import com.triprecord.triprecord.record.controller.response.RecordDataResponse;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.repository.RecordRepository;
@@ -50,12 +50,12 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public RecordResponse getRecordData(Long recordId) {
+    public RecordDataResponse getRecordData(Long recordId) {
         Record record = getRecordOrException(recordId);
         Long likeCount = recordLikeService.getRecordLikeCount(record);
         Long commentCount = recordCommentService.getRecordCommentCount(record);
 
-        return RecordResponse.fromRecord(record, likeCount, commentCount);
+        return RecordDataResponse.fromRecord(record, likeCount, commentCount);
     }
 
     @Transactional

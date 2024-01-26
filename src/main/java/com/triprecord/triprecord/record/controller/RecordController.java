@@ -4,7 +4,7 @@ package com.triprecord.triprecord.record.controller;
 import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
-import com.triprecord.triprecord.record.controller.response.RecordResponse;
+import com.triprecord.triprecord.record.controller.response.RecordDataResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class RecordController {
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<RecordResponse> record(@PathVariable Long recordId){
+    public ResponseEntity<RecordDataResponse> getRecordData(@PathVariable Long recordId){
         return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordData(recordId));
     }
 
