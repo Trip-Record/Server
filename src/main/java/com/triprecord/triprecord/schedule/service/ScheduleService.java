@@ -30,6 +30,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleService {
 
+    private final ScheduleLikeService scheduleLikeService;
+    private final ScheduleCommentService scheduleCommentService;
     private final ScheduleRepository scheduleRepository;
     private final PlaceRepository placeRepository;
     private final UserRepository userRepository;
@@ -80,8 +82,8 @@ public class ScheduleService {
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
         Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
-        Long scheduleLikeCount = schedule.getLikes().stream().count();
-        Long scheduleCommentCount = schedule.getComments().stream().count();
+        Long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+        Long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
 
         return ScheduleGetResponse.of(
                 createdUser,
