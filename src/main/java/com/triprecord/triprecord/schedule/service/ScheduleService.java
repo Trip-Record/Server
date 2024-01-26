@@ -11,9 +11,9 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
-import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
+import com.triprecord.triprecord.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,15 +98,22 @@ public class ScheduleService {
     public void updateSchedule(Long userId, Long scheduleId, ScheduleUpdateRequest ScheduleRequest) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
-        if (schedule.getCreatedUser() != user) {
-            throw new TripRecordException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
+        checkSameUser(schedule.getCreatedUser(), user);
 
         schedule.updateSchedule(ScheduleRequest);
 
         updateSchedulePlace(schedule, ScheduleRequest);
 
         updateScheduleDetail(schedule, ScheduleRequest);
+    }
+
+    @Transactional
+    public void deleteSchedule(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+        checkSameUser(schedule.getCreatedUser(), user);
+
+        scheduleRepository.delete(schedule);
     }
 
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
@@ -119,6 +126,12 @@ public class ScheduleService {
         if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) return;
 
         scheduleDetailService.updateScheduleDetail(schedule, ScheduleRequest);
+    }
+
+    private void checkSameUser(User createdUser, User user) {
+        if (createdUser != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
     }
 
 }

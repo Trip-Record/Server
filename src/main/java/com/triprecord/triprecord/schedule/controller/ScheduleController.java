@@ -2,14 +2,15 @@ package com.triprecord.triprecord.schedule.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
-import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,7 +36,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{scheduleId}")
-    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable @Valid Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
+    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.updateSchedule(userId, scheduleId, request);
         return ResponseEntity
@@ -49,6 +50,15 @@ public class ScheduleController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @DeleteMapping("/{scheduleId}")
+    public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication, @PathVariable Long scheduleId) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleService.deleteSchedule(userId, scheduleId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("일정 삭제에 성공했습니다."));
     }
 
 }
