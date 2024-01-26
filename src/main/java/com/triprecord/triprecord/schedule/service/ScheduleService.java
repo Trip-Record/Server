@@ -11,9 +11,9 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
-import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
+import com.triprecord.triprecord.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +99,7 @@ public class ScheduleService {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
         if (schedule.getCreatedUser() != user) {
-            throw new TripRecordException(ErrorCode.UNAUTHORIZED_ACCESS);
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
         }
 
         schedule.updateSchedule(ScheduleRequest);
@@ -107,6 +107,17 @@ public class ScheduleService {
         updateSchedulePlace(schedule, ScheduleRequest);
 
         updateScheduleDetail(schedule, ScheduleRequest);
+    }
+
+    @Transactional
+    public void deleteSchedule(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+        if (user != schedule.getCreatedUser()) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
+
+        scheduleRepository.delete(schedule);
     }
 
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
