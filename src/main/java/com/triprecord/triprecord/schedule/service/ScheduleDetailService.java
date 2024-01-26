@@ -36,25 +36,19 @@ public class ScheduleDetailService {
     }
 
     @Transactional
-    public void updateScheduleDetail(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
-        if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) return;
+    public void updateScheduleDetail(Schedule schedule, ScheduleUpdateRequest scheduleRequest) {
+        if (scheduleRequest.scheduleDetails() == null || scheduleRequest.scheduleDetails().isEmpty()) return;
 
         List<LocalDate> registeredScheduleDetailDates = scheduleDetailRepository.findScheduleDetailDatesBySchedule(schedule);
 
         if (registeredScheduleDetailDates.isEmpty()) { // 기존 저장된 세부 일정이 없는 경우
-            ScheduleRequest.scheduleDetails().stream()
+            scheduleRequest.scheduleDetails().stream()
                     .forEach(scheduleDetailRequest -> createScheduleDetail(schedule, scheduleDetailRequest.scheduleDetailDate(), scheduleDetailRequest.scheduleDetailContent()));
         } else {
             // 수정된 일정 기간 내에 포함되지 않는 기존 세부 일정 삭제
-            registeredScheduleDetailDates.stream()
-                    .filter(date -> isNotBetweenInclusive(
-                            date,
-                            ScheduleRequest.scheduleStartDate() == null ? schedule.getScheduleStartDate() : ScheduleRequest.scheduleStartDate(),
-                            ScheduleRequest.scheduleStartDate() == null ? schedule.getScheduleEndDate() : ScheduleRequest.scheduleEndDate()
-                    ))
-                    .forEach(date -> scheduleDetailRepository.deleteByScheduleDetailDateAndLinkedSchedule(date, schedule));
+            deleteNonIncludedScheduleDetails(schedule, scheduleRequest, registeredScheduleDetailDates);
 
-            for (ScheduleDetailUpdateRequest scheduleDetailRequest : ScheduleRequest.scheduleDetails()) {
+            for (ScheduleDetailUpdateRequest scheduleDetailRequest : scheduleRequest.scheduleDetails()) {
                 if (registeredScheduleDetailDates.contains(scheduleDetailRequest.scheduleDetailDate())) { // 해당 일자 세부 일정이 이미 존재하는 경우 수정
                     ScheduleDetail scheduleDetail = scheduleDetailRepository.findByScheduleDetailDateAndLinkedSchedule(scheduleDetailRequest.scheduleDetailDate(), schedule);
                     scheduleDetail.updateScheduleDetail(scheduleDetailRequest);
@@ -68,6 +62,16 @@ public class ScheduleDetailService {
     private boolean isNotBetweenInclusive(LocalDate dateToCheck, LocalDate startDate, LocalDate endDate) {
         return !(dateToCheck.isEqual(startDate) || dateToCheck.isAfter(startDate))
                 || !(dateToCheck.isEqual(endDate) || dateToCheck.isBefore(endDate));
+    }
+
+    private void deleteNonIncludedScheduleDetails(Schedule schedule, ScheduleUpdateRequest scheduleRequest, List<LocalDate> registeredScheduleDetailDates) {
+        registeredScheduleDetailDates.stream()
+                .filter(date -> isNotBetweenInclusive(
+                        date,
+                        scheduleRequest.scheduleStartDate() == null ? schedule.getScheduleStartDate() : scheduleRequest.scheduleStartDate(),
+                        scheduleRequest.scheduleStartDate() == null ? schedule.getScheduleEndDate() : scheduleRequest.scheduleEndDate()
+                ))
+                .forEach(date -> scheduleDetailRepository.deleteByScheduleDetailDateAndLinkedSchedule(date, schedule));
     }
 
 }
