@@ -28,12 +28,12 @@ public class SchedulePlace {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
-    private Place schedulePlace;
+    private Place place;
 
 
     @Builder
     public SchedulePlace(Schedule schedule, Place place) {
         this.linkedSchedule = schedule;
-        this.schedulePlace = place;
+        this.place = place;
     }
 }
