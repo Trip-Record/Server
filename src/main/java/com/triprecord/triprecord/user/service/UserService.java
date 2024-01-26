@@ -5,6 +5,9 @@ import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
+import com.triprecord.triprecord.record.repository.RecordRepository;
+import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.controller.dto.response.UserInfoResponse;
@@ -25,6 +28,9 @@ public class UserService {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
+    private final RecordRepository recordRepository;
+    private final RecordPlaceRepository recordPlaceRepository;
+    private final ScheduleRepository scheduleRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -70,19 +76,19 @@ public class UserService {
     }
 
     public Long getLikesCount(User user){
-        return userRepository.recordLikes(user) + userRepository.scheduleLikes(user);
+        return recordRepository.recordLikes(user) + scheduleRepository.scheduleLikes(user);
     }
 
     public Long getPlacesCount (User user){
-        return userRepository.placeCount(user);
+        return recordPlaceRepository.placeCount(user);
     }
 
     public Long getRecordsCount (User user){
-        return userRepository.recordCount(user);
+        return recordRepository.recordCount(user);
     }
 
     public Long getSchedulesCount(User user){
-        return userRepository.scheduleCount(user);
+        return scheduleRepository.scheduleCount(user);
     }
 
     public User getUserOrException(Long userId) {
