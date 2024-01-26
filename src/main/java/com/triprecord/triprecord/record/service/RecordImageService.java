@@ -52,7 +52,6 @@ public class RecordImageService {
     public void deleteRecordImages(Record record, List<String> deleteRequestImageURLs){
         if(deleteRequestImageURLs==null || deleteRequestImageURLs.isEmpty()) return;
         int S3_PATH_LENGTH = s3Service.getFileURLFromS3(null).toString().length();
-        log.info("S3L:"+String.valueOf(S3_PATH_LENGTH));
         for(String imageURL : deleteRequestImageURLs){
             RecordImage recordImage = getRecordImageOrException(record, imageURL);
             recordImageRepository.delete(recordImage);
