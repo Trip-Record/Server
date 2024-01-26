@@ -33,7 +33,7 @@ public class RecordPlaceService {
     }
 
     @Transactional
-    public void uploadRecordPlaces(Record record, List<Long> uploadRequestIds){
+    public void createRecordPlaces(Record record, List<Long> uploadRequestIds){
         if(uploadRequestIds==null || uploadRequestIds.isEmpty()) return;
         for(Long placeId : uploadRequestIds){
             Place place = placeService.getPlaceOrException(placeId);

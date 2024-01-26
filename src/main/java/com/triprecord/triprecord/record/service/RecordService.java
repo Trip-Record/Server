@@ -40,8 +40,8 @@ public class RecordService {
                 .createdUser(createdUser)
                 .build();
         recordRepository.save(record);
-        recordPlaceService.uploadRecordPlaces(record, request.placeIds());
-        recordImageService.uploadRecordImages(record, request.recordImages());
+        recordPlaceService.createRecordPlaces(record, request.placeIds());
+        recordImageService.createRecordImages(record, request.recordImages());
     }
 
     @Transactional
@@ -82,14 +82,14 @@ public class RecordService {
         if(deletePlaceIds==null && addPlaceIds==null) return;
         recordPlaceService.checkPlaceSizeValid(record, deletePlaceIds, addPlaceIds);
         recordPlaceService.deleteRecordPlaces(record, deletePlaceIds);
-        recordPlaceService.uploadRecordPlaces(record, addPlaceIds);
+        recordPlaceService.createRecordPlaces(record, addPlaceIds);
     }
 
     private void modifyImage(Record record, List<String> deleteImages, List<MultipartFile> addImages){
         if(deleteImages==null && addImages==null) return;
         recordImageService.checkImageSizeValid(record, deleteImages, addImages);
         recordImageService.deleteRecordImages(record, deleteImages);
-        recordImageService.uploadRecordImages(record, addImages);
+        recordImageService.createRecordImages(record, addImages);
     }
 
     private Record getRecordOrException(Long recordId){

@@ -36,7 +36,7 @@ public class RecordImageService {
     }
 
     @Transactional
-    public void uploadRecordImages(Record record, List<MultipartFile> addRequestImages){
+    public void createRecordImages(Record record, List<MultipartFile> addRequestImages){
         if(addRequestImages==null || addRequestImages.isEmpty()) return;
         for(MultipartFile image : addRequestImages){
             String imageURL = uploadToS3AndGetURL(image);
