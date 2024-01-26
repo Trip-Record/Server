@@ -8,8 +8,8 @@ public record SchedulePlaceGetResponse(
 ) {
     public static SchedulePlaceGetResponse of(SchedulePlace schedulePlace) {
         return new SchedulePlaceGetResponse(
-                schedulePlace.getSchedulePlace().getPlaceCountry().getCountryName(),
-                schedulePlace.getSchedulePlace().getPlaceName()
+                schedulePlace.getPlace().getPlaceCountry().getCountryName(),
+                schedulePlace.getPlace().getPlaceName()
         );
     }
 }
