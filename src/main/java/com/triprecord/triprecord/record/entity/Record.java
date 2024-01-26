@@ -60,11 +60,11 @@ public class Record {
         this.createdUser = createdUser;
     }
 
-    public void updateRecord(RecordUpdateData updateData){
-        this.recordTitle = updateData.recordTitle();
-        this.recordContent = updateData.recordContent();
-        this.tripStartDate = updateData.startDate();
-        this.tripEndDate = updateData.endDate();
+    public void updateRecord(RecordUpdateData updateData) {
+        if (updateData.recordTitle()!=null) this.recordTitle = updateData.recordTitle();
+        if (updateData.recordContent()!=null) this.recordContent = updateData.recordContent();
+        if (updateData.startDate()!=null) this.tripStartDate = updateData.startDate();
+        if (updateData.endDate()!=null) this.tripEndDate = updateData.endDate();
     }
 
 }

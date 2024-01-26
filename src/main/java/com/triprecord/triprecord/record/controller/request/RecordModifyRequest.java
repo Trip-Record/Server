@@ -1,6 +1,7 @@
 package com.triprecord.triprecord.record.controller.request;
 
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -9,8 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @NotNull
 public record RecordModifyRequest(
-        String changedRecordTitle,
-        String changedRecordContent,
+        @NotBlank String changedRecordTitle,
+        @NotBlank String changedRecordContent,
         LocalDate changedStartDate,
         LocalDate changedEndDate,
         @Size(max = 3) List<Long> deletePlaceIds,

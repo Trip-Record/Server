@@ -13,12 +13,12 @@ public record RecordUpdateData(
         LocalDate endDate
 ) {
 
-    public static RecordUpdateData fromRequest(Record record, RecordModifyRequest request){
+    public static RecordUpdateData fromRequest(RecordModifyRequest request){
         return RecordUpdateData.builder()
-                .recordTitle((request.changedRecordTitle()==null)? record.getRecordTitle(): request.changedRecordTitle())
-                .recordContent((request.changedRecordContent()==null)? record.getRecordContent(): request.changedRecordContent())
-                .startDate((request.changedStartDate()==null)? record.getTripStartDate(): request.changedStartDate())
-                .endDate((request.changedEndDate()==null)? record.getTripEndDate(): request.changedEndDate())
+                .recordTitle(request.changedRecordTitle())
+                .recordContent(request.changedRecordContent())
+                .startDate(request.changedStartDate())
+                .endDate(request.changedEndDate())
                 .build();
     }
 

@@ -59,7 +59,7 @@ public class RecordService {
         Record record = getRecordOrException(recordId);
         checkSameUser(record.getCreatedUser(), user);
 
-        RecordUpdateData recordUpdateData = RecordUpdateData.fromRequest(record, request);
+        RecordUpdateData recordUpdateData = RecordUpdateData.fromRequest(request);
         checkDateValid(recordUpdateData.startDate(), recordUpdateData.endDate());
         record.updateRecord(recordUpdateData);
 
