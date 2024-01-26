@@ -40,17 +40,21 @@ public class RecordService {
                 .createdUser(createdUser)
                 .build();
         recordRepository.save(record);
-        uploadPlace(request.placeIds(), record);
+        recordPlaceService.uploadRecordPlaces(record, request.placeIds());
         recordImageService.uploadRecordImages(record, request.recordImages());
     }
 
-    private void uploadPlace(List<Long> placeIds, Record linkedRecord){
-        for(Long placeId : placeIds){
-            recordPlaceService.uploadRecordPlace(linkedRecord, placeId);
-        }
 
     private void checkDateValid(LocalDate startDate, LocalDate endDate){
         if(endDate.isBefore(startDate)) throw new TripRecordException(ErrorCode.INVALID_DATE);
+    }
+
+
+    private void modifyPlace(Record record, List<Long> deletePlaceIds, List<Long> addPlaceIds){
+        if(deletePlaceIds==null && addPlaceIds==null) return;
+        recordPlaceService.checkPlaceSizeValid(record, deletePlaceIds, addPlaceIds);
+        recordPlaceService.deleteRecordPlaces(record, deletePlaceIds);
+        recordPlaceService.uploadRecordPlaces(record, addPlaceIds);
     }
 
     private void modifyImage(Record record, List<String> deleteImages, List<MultipartFile> addImages){
