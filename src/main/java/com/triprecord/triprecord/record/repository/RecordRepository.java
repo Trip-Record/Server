@@ -11,9 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
-    @Query("select count(r) from Record r where r.createdUser = :user")
-    Long recordCount(@Param("user") User user);
+    Long countRecordByCreatedUser(User user);
 
-    @Query("select count(rc) from RecordLike rc where rc.likedUser = :user")
-    Long recordLikes(@Param("user") User user);
 }

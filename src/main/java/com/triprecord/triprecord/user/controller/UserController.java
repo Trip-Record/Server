@@ -1,13 +1,10 @@
 package com.triprecord.triprecord.user.controller;
 
-<<<<<<< HEAD:src/main/java/com/triprecord/triprecord/user/UserController.java
 import com.triprecord.triprecord.global.util.ResponseMessage;
-=======
 import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.controller.dto.response.UserInfoResponse;
 import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.service.UserService;
->>>>>>> a4a5d55 ([REFACTOR] User 관련 패키지 정리):src/main/java/com/triprecord/triprecord/user/controller/UserController.java
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

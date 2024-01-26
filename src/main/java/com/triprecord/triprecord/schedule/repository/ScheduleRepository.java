@@ -10,9 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query("select count(s) from Schedule s where s.createdUser = :user")
-    Long scheduleCount(@Param("user") User user);
-
-    @Query("select count(sc) from ScheduleLike sc where sc.likedUser = :user")
-    Long scheduleLikes(@Param("user") User user);
+    Long countScheduleByCreatedUser(User user);
 }

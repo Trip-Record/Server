@@ -11,7 +11,7 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
-import com.triprecord.triprecord.user.UserService;
+import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 import lombok.RequiredArgsConstructor;

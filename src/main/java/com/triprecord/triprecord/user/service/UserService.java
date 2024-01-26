@@ -5,8 +5,10 @@ import com.triprecord.triprecord.global.config.jwt.JwtProvider;
 import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.record.repository.RecordLikeRepository;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
+import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
@@ -30,7 +32,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final RecordRepository recordRepository;
     private final RecordPlaceRepository recordPlaceRepository;
+    private final RecordLikeRepository recordLikeRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -76,7 +80,7 @@ public class UserService {
     }
 
     public Long getLikesCount(User user){
-        return recordRepository.recordLikes(user) + scheduleRepository.scheduleLikes(user);
+        return recordLikeRepository.countRecordLikeByLikedUser(user) + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
     }
 
     public Long getPlacesCount (User user){
@@ -84,11 +88,11 @@ public class UserService {
     }
 
     public Long getRecordsCount (User user){
-        return recordRepository.recordCount(user);
+        return recordRepository.countRecordByCreatedUser(user);
     }
 
     public Long getSchedulesCount(User user){
-        return scheduleRepository.scheduleCount(user);
+        return scheduleRepository.countScheduleByCreatedUser(user);
     }
 
     public User getUserOrException(Long userId) {
