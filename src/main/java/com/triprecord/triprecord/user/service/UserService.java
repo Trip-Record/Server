@@ -61,33 +61,27 @@ public class UserService {
 
     public UserInfoResponse findUserData(Long userId){
         User user = getUserOrException(userId);
-        Long recordTotal = countRecords(userId);
-        Long scheduleTotal = countSchedules(userId);
-        Long placeTotal = countPlaces(userId);
-        Long likeTotal = countLikes(userId);
+        Long recordTotal = countRecords(user);
+        Long scheduleTotal = countSchedules(user);
+        Long placeTotal = countPlaces(user);
+        Long likeTotal = countLikes(user);
 
         return UserInfoResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public Long countLikes(Long userId){
-        User user = getUserOrException(userId);
-        Long totalLikes = userRepository.recordLikes(user) + userRepository.scheduleLikes(user);
-
-        return totalLikes;
+    public Long countLikes(User user){
+        return userRepository.recordLikes(user) + userRepository.scheduleLikes(user);
     }
 
-    public Long countPlaces (Long userId){
-        User user = getUserOrException(userId);
+    public Long countPlaces (User user){
         return userRepository.placeCount(user);
     }
 
-    public Long countRecords (Long userId){
-        User user = getUserOrException(userId);
+    public Long countRecords (User user){
         return userRepository.recordCount(user);
     }
 
-    public Long countSchedules(Long userId){
-        User user = getUserOrException(userId);
+    public Long countSchedules(User user){
         return userRepository.scheduleCount(user);
     }
 
