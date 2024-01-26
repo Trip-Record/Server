@@ -6,12 +6,12 @@ import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +31,18 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("기록 생성에 성공했습니다."));
     }
 
+    @DeleteMapping("/{recordId}")
+    public ResponseEntity<ResponseMessage> deleteRecord(Authentication authentication, @PathVariable Long recordId){
+        recordService.deleteRecord(Long.valueOf(authentication.getName()), recordId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 삭제에 성공했습니다."));
+    }
+
     @PatchMapping("/{recordId}")
     public ResponseEntity<ResponseMessage> modifyRecord(Authentication authentication,
                                                         @PathVariable Long recordId,
-                                                        @Valid RecordModifyRequest request){
+                                                        @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.ok(new ResponseMessage("기록 수정에 성공했습니다."));
     }
-
 
 }

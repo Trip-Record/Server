@@ -71,6 +71,15 @@ public class RecordImageService {
                 new TripRecordException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
+    public void deleteS3RecordImage(Record record){
+        List<RecordImage> recordImages = recordImageRepository.findAllByLinkedRecord(record);
+        if(recordImages.isEmpty()) return;
+        String basicS3Path = s3Service.getFileURLFromS3(null).toString();
+        for (RecordImage image : recordImages){
+            String imageName = image.getRecordImgUrl().substring(basicS3Path.length());
+            s3Service.deleteFileFromS3(imageName);
+        }
+    }
 
     private String getNameAddRandomUUID(String originName) {
         String randomUUID = UUID.randomUUID().toString();

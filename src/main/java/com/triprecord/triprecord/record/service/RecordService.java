@@ -44,6 +44,15 @@ public class RecordService {
     }
 
     @Transactional
+    public void deleteRecord(Long userId, Long recordId){
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        checkSameUser(record.getCreatedUser(), user);
+        recordImageService.deleteS3RecordImage(record);
+        recordRepository.delete(record);
+    }
+
+    @Transactional
     public void modifyRecord(Long userId, Long recordId, RecordModifyRequest request){
         User user = userService.getUserOrException(userId);
         Record record = getRecordOrException(recordId);
@@ -56,6 +65,7 @@ public class RecordService {
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
     }
+
 
     private void checkSameUser(User createdUser, User user){
         if(createdUser != user) throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
