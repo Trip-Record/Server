@@ -1,5 +1,4 @@
-package com.triprecord.triprecord.user;
-
+package com.triprecord.triprecord.user.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
