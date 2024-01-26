@@ -1,9 +1,9 @@
 package com.triprecord.triprecord.user.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
-import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
-import com.triprecord.triprecord.user.controller.dto.response.UserInfoResponse;
-import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
+import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/informations")
-    public ResponseEntity<UserInfoResponse> userInfo(Authentication authentication){
+    public ResponseEntity<UserInfoGetResponse> userInfo(Authentication authentication){
         return ResponseEntity.ok().body(userService.findUserData(Long.valueOf(authentication.getName())));
     }
 }

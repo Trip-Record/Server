@@ -10,10 +10,9 @@ import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
-import com.triprecord.triprecord.user.controller.dto.request.UserCreateRequest;
-import com.triprecord.triprecord.user.controller.dto.request.UserLoginRequest;
-import com.triprecord.triprecord.user.controller.dto.response.UserInfoResponse;
-import com.triprecord.triprecord.user.repository.TripStyleRepository;
+import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
+import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -69,14 +68,14 @@ public class UserService {
         return jwtProvider.generateToken(userAuthentication);
     }
 
-    public UserInfoResponse findUserData(Long userId){
+    public UserInfoGetResponse findUserData(Long userId){
         User user = getUserOrException(userId);
         Long recordTotal = getRecordsCount(user);
         Long scheduleTotal = getSchedulesCount(user);
         Long placeTotal = getPlacesCount(user);
         Long likeTotal = getLikesCount(user);
 
-        return UserInfoResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
+        return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
     public Long getLikesCount(User user){
