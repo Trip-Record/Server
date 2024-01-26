@@ -42,7 +42,7 @@ public class RecordController {
                                                         @PathVariable Long recordId,
                                                         @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
-        return ResponseEntity.ok(new ResponseMessage("기록 수정에 성공했습니다."));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
     }
 
 }
