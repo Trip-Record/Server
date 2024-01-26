@@ -61,27 +61,27 @@ public class UserService {
 
     public UserInfoResponse findUserData(Long userId){
         User user = getUserOrException(userId);
-        Long recordTotal = countRecords(user);
-        Long scheduleTotal = countSchedules(user);
-        Long placeTotal = countPlaces(user);
-        Long likeTotal = countLikes(user);
+        Long recordTotal = getRecordsCount(user);
+        Long scheduleTotal = getSchedulesCount(user);
+        Long placeTotal = getPlacesCount(user);
+        Long likeTotal = getLikesCount(user);
 
         return UserInfoResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public Long countLikes(User user){
+    public Long getLikesCount(User user){
         return userRepository.recordLikes(user) + userRepository.scheduleLikes(user);
     }
 
-    public Long countPlaces (User user){
+    public Long getPlacesCount (User user){
         return userRepository.placeCount(user);
     }
 
-    public Long countRecords (User user){
+    public Long getRecordsCount (User user){
         return userRepository.recordCount(user);
     }
 
-    public Long countSchedules(User user){
+    public Long getSchedulesCount(User user){
         return userRepository.scheduleCount(user);
     }
 
