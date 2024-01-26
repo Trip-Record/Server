@@ -1,7 +1,7 @@
 package com.triprecord.triprecord.record.entity;
 
 
-import com.triprecord.triprecord.global.util.EntityBaseTime;
+import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.user.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -58,6 +58,13 @@ public class Record {
         this.tripStartDate = tripStartDate;
         this.tripEndDate = tripEndDate;
         this.createdUser = createdUser;
+    }
+
+    public void updateRecord(RecordUpdateData updateData) {
+        if (updateData.recordTitle()!=null) this.recordTitle = updateData.recordTitle();
+        if (updateData.recordContent()!=null) this.recordContent = updateData.recordContent();
+        if (updateData.startDate()!=null) this.tripStartDate = updateData.startDate();
+        if (updateData.endDate()!=null) this.tripEndDate = updateData.endDate();
     }
 
 }
