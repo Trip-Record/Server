@@ -1,5 +1,7 @@
 package com.triprecord.triprecord.record.service;
 
+import com.triprecord.triprecord.global.exception.ErrorCode;
+import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.global.util.S3Service;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordImage;
@@ -20,17 +22,53 @@ public class RecordImageService {
 
     private final S3Service s3Service;
     private final RecordImageRepository recordImageRepository;
+    private final long MAX_IMAGE_SIZE = 10;
+
+
+    public void checkImageSizeValid(Record record, List<String> deleteRequestImages, List<MultipartFile> addRequestImages){
+        long existingSize = recordImageRepository.countByLinkedRecord(record);
+        long deleteSize = (deleteRequestImages==null)?0:deleteRequestImages.size();
+        long addSize = (addRequestImages==null)?0:addRequestImages.size();
+        long changingSize = existingSize - deleteSize + addSize;
+        if (changingSize > MAX_IMAGE_SIZE) {
+            throw new TripRecordException(ErrorCode.INVALID_RECORD_IMAGE_SIZE);
+        }
+    }
 
     @Transactional
-    public void uploadRecordImage(MultipartFile image, Record record){
+    public void createRecordImages(Record record, List<MultipartFile> addRequestImages){
+        if(addRequestImages==null || addRequestImages.isEmpty()) return;
+        for(MultipartFile image : addRequestImages){
+            String imageURL = uploadToS3AndGetURL(image);
+            RecordImage recordImage = RecordImage.builder()
+                    .linkedRecord(record)
+                    .imageURL(imageURL)
+                    .build();
+            recordImageRepository.save(recordImage);
+        }
+    }
+
+    @Transactional
+    public void deleteRecordImages(Record record, List<String> deleteRequestImageURLs){
+        if(deleteRequestImageURLs==null || deleteRequestImageURLs.isEmpty()) return;
+        int S3_PATH_LENGTH = s3Service.getFileURLFromS3(null).toString().length();
+        for(String imageURL : deleteRequestImageURLs){
+            RecordImage recordImage = getRecordImageOrException(record, imageURL);
+            recordImageRepository.delete(recordImage);
+            s3Service.deleteFileFromS3(imageURL.substring(S3_PATH_LENGTH));
+        }
+    }
+
+    private String uploadToS3AndGetURL(MultipartFile image){
         String uploadName = getNameAddRandomUUID(image.getOriginalFilename());
         s3Service.uploadFileToS3(image, uploadName);
-        String imageURL = s3Service.getFileURLFromS3(uploadName).toString();
-        RecordImage recordImage = RecordImage.builder()
-                .linkedRecord(record)
-                .imageURL(imageURL)
-                .build();
-        recordImageRepository.save(recordImage);
+        return s3Service.getFileURLFromS3(uploadName).toString();
+    }
+
+
+    private RecordImage getRecordImageOrException(Record record, String imageURL){
+        return recordImageRepository.findByLinkedRecordAndRecordImgUrl(record, imageURL).orElseThrow(()->
+                new TripRecordException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
     public void deleteS3RecordImage(Record record){
@@ -47,4 +85,5 @@ public class RecordImageService {
         String randomUUID = UUID.randomUUID().toString();
         return randomUUID+originName;
     }
+
 }
