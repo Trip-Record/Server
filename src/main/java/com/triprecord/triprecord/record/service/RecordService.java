@@ -48,9 +48,11 @@ public class RecordService {
         User user = userService.getUserOrException(userId);
         Record record = getRecordOrException(recordId);
         checkSameUser(record.getCreatedUser(), user);
+
         RecordUpdateData recordUpdateData = RecordUpdateData.fromRequest(record, request);
         checkDateValid(recordUpdateData.startDate(), recordUpdateData.endDate());
         record.updateRecord(recordUpdateData);
+
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
     }
