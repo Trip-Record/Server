@@ -68,7 +68,7 @@ public class UserService {
         return jwtProvider.generateToken(userAuthentication);
     }
 
-    public UserInfoGetResponse findUserData(Long userId){
+    public UserInfoGetResponse getUserInfo(Long userId){
         User user = getUserOrException(userId);
         Long recordTotal = getRecordsCount(user);
         Long scheduleTotal = getSchedulesCount(user);

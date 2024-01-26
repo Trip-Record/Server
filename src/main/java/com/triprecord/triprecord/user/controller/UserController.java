@@ -45,6 +45,6 @@ public class UserController {
 
     @GetMapping("/informations")
     public ResponseEntity<UserInfoGetResponse> userInfo(Authentication authentication){
-        return ResponseEntity.ok().body(userService.findUserData(Long.valueOf(authentication.getName())));
+        return ResponseEntity.ok().body(userService.getUserInfo(Long.valueOf(authentication.getName())));
     }
 }
