@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +30,11 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("기록 생성에 성공했습니다."));
     }
 
+    @DeleteMapping("/{recordId}")
+    public ResponseEntity<ResponseMessage> deleteRecord(Authentication authentication, @PathVariable Long recordId){
+        recordService.deleteRecord(Long.valueOf(authentication.getName()), recordId);
+        return ResponseEntity.ok(new ResponseMessage("기록 삭제에 성공했습니다."));
+    }
 
 
 }
