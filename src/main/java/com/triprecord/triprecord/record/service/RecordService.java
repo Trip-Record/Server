@@ -108,7 +108,7 @@ public class RecordService {
 
     private Record getRecordOrException(Long recordId){
         return recordRepository.findByRecordId(recordId).orElseThrow(()->
-                new TripRecordException(ErrorCode.USER_NOT_FOUND));
+                new TripRecordException(ErrorCode.RECORD_NOT_FOUND));
     }
 
 }
