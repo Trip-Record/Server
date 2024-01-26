@@ -5,9 +5,11 @@ import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -22,6 +26,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ScheduleService {
 
+    private final ScheduleLikeService scheduleLikeService;
+    private final ScheduleCommentService scheduleCommentService;
     private final UserService userService;
     private final PlaceService placeService;
     private final SchedulePlaceService schedulePlaceService;
@@ -61,6 +67,29 @@ public class ScheduleService {
 
         request.scheduleDetails().stream()
                 .forEach(scheduleDetail -> scheduleDetailService.createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+    }
+
+    public ScheduleGetResponse getSchedule(Long scheduleId) {
+        Schedule schedule = getScheduleOrException(scheduleId);
+        User createdUser = schedule.getCreatedUser();
+        TripStyle createdUserTripStyle = schedule.getCreatedUser().getUserTripStyle();
+        List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
+
+        List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
+        Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
+
+        Long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+        Long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+
+        return ScheduleGetResponse.of(
+                createdUser,
+                createdUserTripStyle,
+                schedule,
+                schedulePlaces,
+                scheduleDetails,
+                scheduleLikeCount,
+                scheduleCommentCount
+        );
     }
 
     @Transactional

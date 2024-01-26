@@ -2,6 +2,7 @@ package com.triprecord.triprecord.schedule.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +41,14 @@ public class ScheduleController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("일정 수정에 성공했습니다."));
+    }
+
+    @GetMapping("/{scheduleId}")
+    public ResponseEntity<ScheduleGetResponse> getSchedule(@PathVariable Long scheduleId) {
+        ScheduleGetResponse response = scheduleService.getSchedule(scheduleId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
 }
