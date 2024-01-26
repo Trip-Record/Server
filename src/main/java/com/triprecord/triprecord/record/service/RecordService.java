@@ -2,14 +2,13 @@ package com.triprecord.triprecord.record.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
-import com.triprecord.triprecord.record.entity.RecordPlace;
-import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.UserService;
 import com.triprecord.triprecord.user.entity.User;
-import com.triprecord.triprecord.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +43,22 @@ public class RecordService {
         recordImageService.uploadRecordImages(record, request.recordImages());
     }
 
+    @Transactional
+    public void modifyRecord(Long userId, Long recordId, RecordModifyRequest request){
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        checkSameUser(record.getCreatedUser(), user);
+        RecordUpdateData recordUpdateData = RecordUpdateData.fromRequest(record, request);
+        checkDateValid(recordUpdateData.startDate(), recordUpdateData.endDate());
+        record.updateRecord(recordUpdateData);
+        modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
+        modifyImage(record, request.deleteImages(), request.addImages());
+    }
+
+    private void checkSameUser(User createdUser, User user){
+        if(createdUser != user) throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+    }
+
 
     private void checkDateValid(LocalDate startDate, LocalDate endDate){
         if(endDate.isBefore(startDate)) throw new TripRecordException(ErrorCode.INVALID_DATE);
@@ -64,6 +79,9 @@ public class RecordService {
         recordImageService.uploadRecordImages(record, addImages);
     }
 
+    private Record getRecordOrException(Long recordId){
+        return recordRepository.findByRecordId(recordId).orElseThrow(()->
+                new TripRecordException(ErrorCode.USER_NOT_FOUND));
     }
 
 }
