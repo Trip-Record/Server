@@ -37,6 +37,26 @@ public class RecordService {
         uploadImage(request.recordImages(), record);
     }
 
+    @Transactional
+    public void deleteRecord(Long userId, Long recordId){
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        sameUserCheck(record.getCreatedUser(), user);
+        recordImageService.deleteS3RecordImage(record);
+        recordRepository.delete(record);
+    }
+
+
+    private void sameUserCheck(User recordCreatedUser, User user){
+        if(recordCreatedUser!=user) throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+    }
+
+    private Record getRecordOrException(Long recordId){
+        return recordRepository.findByRecordId(recordId).orElseThrow(()->
+                new TripRecordException(ErrorCode.RECORD_NOT_FOUND));
+    }
+
+
     private void uploadPlace(List<Long> placeIds, Record linkedRecord){
         for(Long placeId : placeIds){
             recordPlaceService.uploadRecordPlace(linkedRecord, placeId);

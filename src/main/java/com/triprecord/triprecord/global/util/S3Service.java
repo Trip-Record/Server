@@ -1,7 +1,6 @@
 package com.triprecord.triprecord.global.util;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.triprecord.triprecord.global.exception.ErrorCode;
@@ -31,6 +30,10 @@ public class S3Service {
         } catch (IOException e) {
             throw new TripRecordException(ErrorCode.FILE_READ_FAILED);
         }
+    }
+
+    public void deleteFileFromS3(final String fileName){
+        S3Client.deleteObject(bucket, fileName);
     }
 
     public URL getFileURLFromS3(final String fileName) {
