@@ -55,13 +55,13 @@ public class RecordService {
     public RecordResponse getRecordResponseData(Long recordId) {
         Record record = getRecordOrException(recordId);
 
-        List<PlaceBasicData> recordPlace = recordPlaceService.getRecordPlaceBasicData(record);
+        List<PlaceBasicData> recordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
         List<RecordImageData> recordImageData = recordImageService.findRecordImageData(record);
 
         Long likeCount = recordLikeService.getRecordLikeCount(record);
         Long commentCount = recordCommentService.getRecordCommentCount(record);
 
-        return RecordResponse.fromRecordDatas(record, recordPlace, recordImageData, likeCount, commentCount);
+        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, likeCount, commentCount);
     }
 
     @Transactional

@@ -20,11 +20,11 @@ public record RecordResponse(
         Long commentCount
 
 ) {
-    public static RecordResponse fromRecordDatas(Record record,
-                                            List<PlaceBasicData> recordPlaces,
-                                            List<RecordImageData> images,
-                                            Long likeCount,
-                                            Long commentCount){
+    public static RecordResponse fromRecordData(Record record,
+                                                List<PlaceBasicData> recordPlaces,
+                                                List<RecordImageData> images,
+                                                Long likeCount,
+                                                Long commentCount){
         return new RecordResponse(
                 UserProfile.of(record.getCreatedUser()),
                 recordPlaces,
