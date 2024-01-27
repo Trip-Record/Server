@@ -3,6 +3,7 @@ package com.triprecord.triprecord.record.service;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.global.util.S3Service;
+import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordImage;
 import com.triprecord.triprecord.record.repository.RecordImageRepository;
@@ -46,6 +47,12 @@ public class RecordImageService {
                     .build();
             recordImageRepository.save(recordImage);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<RecordImageData> findRecordImageData(Record record) {
+        List<RecordImage> images =  recordImageRepository.findAllByLinkedRecord(record);
+        return images.stream().map(RecordImageData::fromImage).toList();
     }
 
     @Transactional
