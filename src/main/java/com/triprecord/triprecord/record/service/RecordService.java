@@ -3,7 +3,10 @@ package com.triprecord.triprecord.record.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.location.PlaceBasicData;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordResponse;
+import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.repository.RecordRepository;
@@ -27,6 +30,10 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final RecordImageService recordImageService;
     private final RecordPlaceService recordPlaceService;
+    private final RecordCommentService recordCommentService;
+    private final RecordLikeService recordLikeService;
+
+
 
     @Transactional
     public void createRecord(Long userId, RecordCreateRequest request){
@@ -42,6 +49,19 @@ public class RecordService {
         recordRepository.save(record);
         recordPlaceService.createRecordPlaces(record, request.placeIds());
         recordImageService.createRecordImages(record, request.recordImages());
+    }
+
+    @Transactional(readOnly = true)
+    public RecordResponse getRecordResponseData(Long recordId) {
+        Record record = getRecordOrException(recordId);
+
+        List<PlaceBasicData> recordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
+        List<RecordImageData> recordImageData = recordImageService.findRecordImageData(record);
+
+        Long likeCount = recordLikeService.getRecordLikeCount(record);
+        Long commentCount = recordCommentService.getRecordCommentCount(record);
+
+        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, likeCount, commentCount);
     }
 
     @Transactional
@@ -94,7 +114,7 @@ public class RecordService {
 
     private Record getRecordOrException(Long recordId){
         return recordRepository.findByRecordId(recordId).orElseThrow(()->
-                new TripRecordException(ErrorCode.USER_NOT_FOUND));
+                new TripRecordException(ErrorCode.RECORD_NOT_FOUND));
     }
 
 }
