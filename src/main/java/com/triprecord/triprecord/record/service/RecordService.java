@@ -87,6 +87,11 @@ public class RecordService {
         modifyImage(record, request.deleteImages(), request.addImages());
     }
 
+    public void postLikeToRecord(Long userId, Long recordId) {
+        User user  = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        recordLikeService.createRecordLike(user, record);
+    }
 
     private void checkSameUser(User createdUser, User user){
         if(createdUser != user) throw new TripRecordException(ErrorCode.INVALID_PERMISSION);

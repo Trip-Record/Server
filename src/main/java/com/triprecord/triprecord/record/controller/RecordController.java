@@ -5,6 +5,7 @@ import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
+import com.triprecord.triprecord.record.service.RecordLikeService;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,12 @@ public class RecordController {
                                                         @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
+    }
+
+    @PostMapping("/{recordId}/likes")
+    public ResponseEntity<ResponseMessage> postLike(Authentication authentication, @PathVariable Long recordId){
+        recordService.postLikeToRecord(Long.valueOf(authentication.getName()), recordId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("좋아요 전송에 성공했습니다."));
     }
 
 }
