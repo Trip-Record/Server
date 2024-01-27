@@ -3,8 +3,10 @@ package com.triprecord.triprecord.record.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.location.PlaceBasicData;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
-import com.triprecord.triprecord.record.controller.response.RecordDataResponse;
+import com.triprecord.triprecord.record.controller.response.RecordResponse;
+import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.repository.RecordRepository;
@@ -50,12 +52,16 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public RecordDataResponse getRecordData(Long recordId) {
+    public RecordResponse getRecordResponseData(Long recordId) {
         Record record = getRecordOrException(recordId);
+
+        List<PlaceBasicData> recordPlace = recordPlaceService.getRecordPlaceBasicData(record);
+        List<RecordImageData> recordImageData = recordImageService.findRecordImageData(record);
+
         Long likeCount = recordLikeService.getRecordLikeCount(record);
         Long commentCount = recordCommentService.getRecordCommentCount(record);
 
-        return RecordDataResponse.fromRecord(record, likeCount, commentCount);
+        return RecordResponse.fromRecordDatas(record, recordPlace, recordImageData, likeCount, commentCount);
     }
 
     @Transactional
