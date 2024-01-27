@@ -12,7 +12,7 @@ public class RecordLikeService {
 
     private final RecordLikeRepository recordLikeRepository;
 
-    public long getRecordLikeCount(Record record){
+    public Long getRecordLikeCount(Record record){
         return recordLikeRepository.countByLikedRecord(record);
     }
 }
