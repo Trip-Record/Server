@@ -18,12 +18,6 @@ public class TripStyleService {
 
     public List<TripStyleInfo> getTripStyleInfo(){
         List<TripStyle> tripStyleList = tripStyleRepository.findAll();
-        List<TripStyleInfo> tripStyleInfoList = new ArrayList<>();
-
-        for(TripStyle tripStyle : tripStyleList){
-            tripStyleInfoList.add(TripStyleInfo.of(tripStyle));
-        }
-
-        return tripStyleInfoList;
+        return tripStyleList.stream().map(TripStyleInfo::of).toList();
     }
 }
