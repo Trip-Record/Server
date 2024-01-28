@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/records/{recordId}/comments",
             "/schedules",
             "/schedules/{scheduleId}",
-            "/schedules/{scheduleId}/comments"
+            "/schedules/{scheduleId}/comments",
+            "/trip-styles"
     };
 
     @Bean
