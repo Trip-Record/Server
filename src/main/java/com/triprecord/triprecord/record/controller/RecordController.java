@@ -52,4 +52,10 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
     }
 
+    @PostMapping("/{recordId}/likes")
+    public ResponseEntity<ResponseMessage> postLike(Authentication authentication, @PathVariable Long recordId){
+        recordService.postLikeToRecord(Long.valueOf(authentication.getName()), recordId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("좋아요 전송에 성공했습니다."));
+    }
+
 }

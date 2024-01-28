@@ -32,9 +32,9 @@ public class RecordLike {
     private User likedUser;
 
     @Builder
-    public RecordLike(Record record, User user) {
-        this.likedRecord = record;
-        this.likedUser = user;
+    public RecordLike(Record likedRecord, User likedUser) {
+        this.likedRecord = likedRecord;
+        this.likedUser = likedUser;
     }
 
 }
