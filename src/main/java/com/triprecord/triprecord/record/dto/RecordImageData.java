@@ -4,7 +4,7 @@ import com.triprecord.triprecord.record.entity.RecordImage;
 
 public record RecordImageData(
         Long recordImageId,
-        String recordImageURL
+        String recordImageUrl
 ) {
     public static RecordImageData fromImage(RecordImage recordImage){
         return new RecordImageData(

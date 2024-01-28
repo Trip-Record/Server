@@ -7,10 +7,10 @@ import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordLike;
 import com.triprecord.triprecord.record.repository.RecordLikeRepository;
 import com.triprecord.triprecord.user.entity.User;
-import com.triprecord.triprecord.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +18,8 @@ public class RecordLikeService {
 
     private final RecordLikeRepository recordLikeRepository;
 
-    public long getRecordLikeCount(Record record){
+
+    public Long getRecordLikeCount(Record record){
         return recordLikeRepository.countByLikedRecord(record);
     }
 

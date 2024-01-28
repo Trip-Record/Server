@@ -5,7 +5,6 @@ import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
-import com.triprecord.triprecord.record.service.RecordLikeService;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

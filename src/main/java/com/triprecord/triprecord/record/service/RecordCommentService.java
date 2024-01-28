@@ -12,7 +12,8 @@ public class RecordCommentService {
 
     private final RecordCommentRepository recordCommentRepository;
 
-    public long getRecordCommentCount(Record record){
+
+    public Long getRecordCommentCount(Record record){
         return recordCommentRepository.countByCommentedRecord(record);
     }
 }
