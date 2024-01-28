@@ -3,7 +3,7 @@ package com.triprecord.triprecord.record.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
-import com.triprecord.triprecord.location.PlaceRepository;
+import com.triprecord.triprecord.location.PlaceBasicData;
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.record.entity.Record;
@@ -43,6 +43,12 @@ public class RecordPlaceService {
                     .build();
             recordPlaceRepository.save(recordPlace);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceBasicData> getRecordPlaceBasicData(Record record) {
+        List<Place> linkedPlaceList = recordPlaceRepository.findAllPlaceByLinkedRecord(record);
+        return linkedPlaceList.stream().map(PlaceBasicData::fromPlace).toList();
     }
 
     @Transactional
