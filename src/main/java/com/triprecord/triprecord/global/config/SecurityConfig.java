@@ -37,6 +37,7 @@ public class SecurityConfig {
             "/schedules/{scheduleId}",
             "/schedules/{scheduleId}/comments",
             "/trip-styles"
+            ,"/locations"
     };
 
     @Bean
