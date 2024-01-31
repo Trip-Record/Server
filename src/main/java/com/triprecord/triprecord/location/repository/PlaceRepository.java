@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByPlaceId(Long placeId);
-    List<Place> findPlaceByPlaceCountry(Country country);
+    List<Place> findAllByPlaceCountry(Country country);
 }

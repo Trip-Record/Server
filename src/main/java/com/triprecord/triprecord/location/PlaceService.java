@@ -35,7 +35,7 @@ public class PlaceService {
         for(Continent continent : continentList){
             List<Country> countryList = countryRepository.findCountryByContinent(continent);
             for(Country country : countryList){
-                List<Place> placeList = placeRepository.findPlaceByPlaceCountry(country);
+                List<Place> placeList = placeRepository.findAllByPlaceCountry(country);
                 locationInfoGetResponseList.add(LocationInfoGetResponse.of(continent, placeList));
             }
         }
