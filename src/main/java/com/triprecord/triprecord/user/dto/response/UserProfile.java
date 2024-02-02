@@ -12,8 +12,8 @@ public record UserProfile(
         return new UserProfile(
                 user.getUserNickname(),
                 user.getUserProfileImg(),
-                user.getUserTripStyle().getTripStyleName(),
-                user.getUserTripStyle().getTripStyleImg()
+                user.getUserTripStyle() == null ? null : user.getUserTripStyle().getTripStyleName(),
+                user.getUserTripStyle() == null ? null : user.getUserTripStyle().getTripStyleImg()
         );
     }
 }
