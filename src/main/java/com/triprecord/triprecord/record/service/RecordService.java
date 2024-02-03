@@ -4,16 +4,23 @@ package com.triprecord.triprecord.record.service;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceBasicData;
+import com.triprecord.triprecord.location.PlaceRepository;
+import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordPlaceRankGetResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
+import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +39,8 @@ public class RecordService {
     private final RecordPlaceService recordPlaceService;
     private final RecordCommentService recordCommentService;
     private final RecordLikeService recordLikeService;
+    private final PlaceRepository placeRepository;
+    private final RecordPlaceRepository recordPlaceRepository;
 
 
 
@@ -117,9 +126,27 @@ public class RecordService {
         recordImageService.createRecordImages(record, addImages);
     }
 
+    public List<RecordPlaceRankGetResponse> getMonthlyRank(String date){
+        List<RecordPlaceRankGetResponse> recordPlaceRankGetResponseList = new ArrayList<>();
+        List<Place> placeList = placeRepository.findAll();
+
+        for(Place place : placeList){
+            Integer visitCount = recordPlaceRepository.getCount(place.getPlaceId(), date).orElseGet(() -> 0);
+            Integer rank = recordPlaceRepository.getRank(place.getPlaceId(),date).orElseGet(() -> 0);
+            if(rank <= 7 && rank != 0){
+                recordPlaceRankGetResponseList.add(RecordPlaceRankGetResponse.of(place, visitCount, rank));
+            }
+        }
+        Collections.sort(
+                recordPlaceRankGetResponseList, Comparator.comparing(RecordPlaceRankGetResponse::visitCount).reversed());
+
+        return recordPlaceRankGetResponseList;
+    }
+
     private Record getRecordOrException(Long recordId){
         return recordRepository.findByRecordId(recordId).orElseThrow(()->
                 new TripRecordException(ErrorCode.RECORD_NOT_FOUND));
     }
 
 }
+
