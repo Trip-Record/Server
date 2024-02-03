@@ -3,7 +3,7 @@ package com.triprecord.triprecord.record.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
-import com.triprecord.triprecord.location.PlaceBasicData;
+import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.record.entity.Record;

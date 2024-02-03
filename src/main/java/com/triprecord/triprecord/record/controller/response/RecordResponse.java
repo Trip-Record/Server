@@ -1,6 +1,6 @@
 package com.triprecord.triprecord.record.controller.response;
 
-import com.triprecord.triprecord.location.PlaceBasicData;
+import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.user.dto.response.UserProfile;

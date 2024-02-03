@@ -11,7 +11,6 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
-import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +73,6 @@ public class ScheduleService {
     public ScheduleGetResponse getSchedule(Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
         User createdUser = schedule.getCreatedUser();
-        TripStyle createdUserTripStyle = schedule.getCreatedUser().getUserTripStyle();
         List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
 
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
@@ -85,7 +83,6 @@ public class ScheduleService {
 
         return ScheduleGetResponse.of(
                 createdUser,
-                createdUserTripStyle,
                 schedule,
                 schedulePlaces,
                 scheduleDetails,

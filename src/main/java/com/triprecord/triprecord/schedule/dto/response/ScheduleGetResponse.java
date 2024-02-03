@@ -4,7 +4,6 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.user.dto.response.UserProfile;
-import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 
 import java.util.List;
@@ -21,7 +20,6 @@ public record ScheduleGetResponse(
         Long scheduleCommentCount
 ) {
     public static ScheduleGetResponse of(User user,
-                                         TripStyle userTripStyle,
                                          Schedule schedule,
                                          List<SchedulePlace> schedulePlaces,
                                          List<ScheduleDetail> scheduleDetails,

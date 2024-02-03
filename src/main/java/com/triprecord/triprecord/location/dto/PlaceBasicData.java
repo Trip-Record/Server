@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.location;
+package com.triprecord.triprecord.location.dto;
 
 import com.triprecord.triprecord.location.entity.Place;
 
