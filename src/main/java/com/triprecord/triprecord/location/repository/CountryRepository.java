@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface CountryRepository extends JpaRepository<Country, Long> {
-    List<Country> findCountryByContinent(Continent continent);
+    List<Country> findALLByContinent(Continent continent);
 }

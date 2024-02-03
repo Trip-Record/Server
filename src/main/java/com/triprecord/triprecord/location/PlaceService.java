@@ -33,7 +33,7 @@ public class PlaceService {
         List<LocationInfoGetResponse> locationInfoGetResponseList = new ArrayList<>();
 
         for(Continent continent : continentList){
-            List<Country> countryList = countryRepository.findCountryByContinent(continent);
+            List<Country> countryList = countryRepository.findALLByContinent(continent);
             for(Country country : countryList){
                 List<Place> placeList = placeRepository.findAllByPlaceCountry(country);
                 locationInfoGetResponseList.add(LocationInfoGetResponse.of(continent, placeList));
