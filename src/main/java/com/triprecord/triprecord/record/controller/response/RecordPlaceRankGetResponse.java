@@ -1,6 +1,6 @@
 package com.triprecord.triprecord.record.controller.response;
 
-import com.triprecord.triprecord.location.PlaceBasicData;
+import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.location.entity.Place;
 
 public record RecordPlaceRankGetResponse(

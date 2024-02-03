@@ -127,6 +127,23 @@ public class RecordService {
         recordImageService.createRecordImages(record, addImages);
     }
 
+    public List<RecordPlaceRankGetResponse> getMonthlyRank(String date){
+        List<RecordPlaceRankGetResponse> recordPlaceRankGetResponseList = new ArrayList<>();
+        List<Place> placeList = placeRepository.findAll();
+
+        for(Place place : placeList){
+            Integer visitCount = recordPlaceRepository.getCount(place.getPlaceId(), date).orElseGet(() -> 0);
+            Integer rank = recordPlaceRepository.getRank(place.getPlaceId(),date).orElseGet(() -> 0);
+            if(rank <= 7 && rank != 0){
+                recordPlaceRankGetResponseList.add(RecordPlaceRankGetResponse.of(place, visitCount, rank));
+            }
+        }
+        Collections.sort(
+                recordPlaceRankGetResponseList, Comparator.comparing(RecordPlaceRankGetResponse::visitCount).reversed());
+
+        return recordPlaceRankGetResponseList;
+    }
+
     private Record getRecordOrException(Long recordId){
         return recordRepository.findByRecordId(recordId).orElseThrow(()->
                 new TripRecordException(ErrorCode.RECORD_NOT_FOUND));
