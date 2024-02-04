@@ -35,4 +35,11 @@ public class RecordLikeService {
         recordLikeRepository.save(recordLike);
     }
 
+    @Transactional
+    public void deleteRecordLike(User user, Record record) {
+        RecordLike like = recordLikeRepository.findByLikedRecordAndLikedUser(record, user).orElseThrow(()->
+                new TripRecordException(ErrorCode.RECORD_LIKE_NOT_FOUND));
+        recordLikeRepository.delete(like);
+    }
+
 }
