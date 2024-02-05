@@ -50,7 +50,7 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<SchedulePageGetResponse> getSchedules(@PageableDefault Pageable pageable) {
+    public ResponseEntity<SchedulePageGetResponse> getSchedules(@PageableDefault(size = 5) Pageable pageable) {
         SchedulePageGetResponse response = scheduleService.getSchedules(pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
