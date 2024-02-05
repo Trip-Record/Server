@@ -1,8 +1,7 @@
 package com.triprecord.triprecord.location.controller;
 
 import com.triprecord.triprecord.location.PlaceService;
-import com.triprecord.triprecord.record.controller.response.RecordPlaceRankGetResponse;
-import com.triprecord.triprecord.record.service.RecordService;
+import com.triprecord.triprecord.location.dto.PlaceMonthlyRankGetResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ public class RankController {
     private final PlaceService placeService;
 
     @GetMapping("/months")
-    public ResponseEntity<List<RecordPlaceRankGetResponse>> monthRank(@RequestParam("year") String year, @RequestParam("month") String month){
+    public ResponseEntity<List<PlaceMonthlyRankGetResponse>> monthRank(@RequestParam("year") String year, @RequestParam("month") String month){
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getMonthlyRank(String.format("%s-%s", year, month)));
     }
 }
