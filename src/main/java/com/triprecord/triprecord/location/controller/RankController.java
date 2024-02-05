@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.record.controller;
+package com.triprecord.triprecord.location.controller;
 
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.record.controller.response.RecordPlaceRankGetResponse;
