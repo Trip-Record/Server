@@ -1,5 +1,6 @@
 package com.triprecord.triprecord.record.controller;
 
+import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.record.controller.response.RecordPlaceRankGetResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import java.util.List;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/ranks")
 public class RankController {
 
-    private final RecordService recordService;
+    private final PlaceService placeService;
 
     @GetMapping("/months")
     public ResponseEntity<List<RecordPlaceRankGetResponse>> monthRank(@RequestParam("year") String year, @RequestParam("month") String month){
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getMonthlyRank(String.format("%s-%s", year, month)));
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getMonthlyRank(String.format("%s-%s", year, month)));
     }
 }

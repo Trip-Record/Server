@@ -9,7 +9,11 @@ import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.location.repository.ContinentRepository;
 import com.triprecord.triprecord.location.repository.CountryRepository;
 import com.triprecord.triprecord.location.repository.PlaceRepository;
+import com.triprecord.triprecord.record.controller.response.RecordPlaceRankGetResponse;
+import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +24,8 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
     private final ContinentRepository continentRepository;
     private final CountryRepository countryRepository;
+    private final RecordPlaceRepository recordPlaceRepository;
+
 
     public Place getPlaceOrException(Long placeId) {
         return placeRepository.findByPlaceId(placeId).orElseThrow(() ->
@@ -41,5 +47,22 @@ public class PlaceService {
         }
 
         return locationInfoGetResponseList;
+    }
+
+    public List<RecordPlaceRankGetResponse> getMonthlyRank(String date){
+        List<RecordPlaceRankGetResponse> recordPlaceRankGetResponseList = new ArrayList<>();
+        List<Place> placeList = placeRepository.findAll();
+
+        for(Place place : placeList){
+            Integer visitCount = recordPlaceRepository.getCount(place.getPlaceId(), date).orElseGet(() -> 0);
+            Integer rank = recordPlaceRepository.getRank(place.getPlaceId(),date).orElseGet(() -> 0);
+            if(rank <= 7 && rank != 0){
+                recordPlaceRankGetResponseList.add(RecordPlaceRankGetResponse.of(place, visitCount, rank));
+            }
+        }
+        Collections.sort(
+                recordPlaceRankGetResponseList, Comparator.comparing(RecordPlaceRankGetResponse::visitCount).reversed());
+
+        return recordPlaceRankGetResponseList;
     }
 }
