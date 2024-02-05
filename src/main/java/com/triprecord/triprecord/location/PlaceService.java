@@ -9,7 +9,7 @@ import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.location.repository.ContinentRepository;
 import com.triprecord.triprecord.location.repository.CountryRepository;
 import com.triprecord.triprecord.location.repository.PlaceRepository;
-import com.triprecord.triprecord.location.dto.PlaceMonthlyRankGetResponse;
+import com.triprecord.triprecord.location.dto.PlaceRankGetResponse;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,20 +49,20 @@ public class PlaceService {
         return locationInfoGetResponseList;
     }
 
-    public List<PlaceMonthlyRankGetResponse> getMonthlyRank(String date){
-        List<PlaceMonthlyRankGetResponse> placeMonthlyRankGetResponseList = new ArrayList<>();
+    public List<PlaceRankGetResponse> getMonthlyRank(String date){
+        List<PlaceRankGetResponse> placeRankGetResponseList = new ArrayList<>();
         List<Place> placeList = placeRepository.findAll();
 
         for(Place place : placeList){
             Integer visitCount = recordPlaceRepository.getCount(place.getPlaceId(), date).orElseGet(() -> 0);
             Integer rank = recordPlaceRepository.getRank(place.getPlaceId(),date).orElseGet(() -> 0);
             if(rank <= 7 && rank != 0){
-                placeMonthlyRankGetResponseList.add(PlaceMonthlyRankGetResponse.of(place, visitCount, rank));
+                placeRankGetResponseList.add(PlaceRankGetResponse.of(place, visitCount, rank));
             }
         }
         Collections.sort(
-                placeMonthlyRankGetResponseList, Comparator.comparing(PlaceMonthlyRankGetResponse::visitCount).reversed());
+                placeRankGetResponseList, Comparator.comparing(PlaceRankGetResponse::visitCount).reversed());
 
-        return placeMonthlyRankGetResponseList;
+        return placeRankGetResponseList;
     }
 }
