@@ -27,7 +27,8 @@ public class ScheduleController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication, @RequestBody @Valid ScheduleCreateRequest request) {
+    public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication,
+                                                          @RequestBody @Valid ScheduleCreateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.createSchedule(userId, request);
         return ResponseEntity
@@ -36,7 +37,8 @@ public class ScheduleController {
     }
 
     @PatchMapping("/{scheduleId}")
-    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequest request) {
+    public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable Long scheduleId,
+                                                          @RequestBody ScheduleUpdateRequest request) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.updateSchedule(userId, scheduleId, request);
         return ResponseEntity
@@ -53,12 +55,23 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/{scheduleId}")
-    public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication, @PathVariable Long scheduleId) {
+    public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication,
+                                                          @PathVariable Long scheduleId) {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.deleteSchedule(userId, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("일정 삭제에 성공했습니다."));
+    }
+
+    @PostMapping("{scheduleId}/likes")
+    public ResponseEntity<ResponseMessage> createScheduleLike(Authentication authentication,
+                                                              @PathVariable Long scheduleId) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleService.createScheduleLike(userId, scheduleId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
     }
 
 }
