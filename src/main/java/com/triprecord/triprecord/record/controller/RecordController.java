@@ -4,10 +4,12 @@ package com.triprecord.triprecord.record.controller;
 import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -31,6 +33,11 @@ public class RecordController {
     public ResponseEntity<ResponseMessage> createRecord(Authentication authentication, @Valid RecordCreateRequest request){
         recordService.createRecord(Long.valueOf(authentication.getName()), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("기록 생성에 성공했습니다."));
+    }
+
+    @GetMapping()
+    public ResponseEntity<RecordPageResponse> getRecordPage(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(pageable));
     }
 
     @GetMapping("/{recordId}")

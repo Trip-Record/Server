@@ -5,6 +5,7 @@ import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
@@ -14,9 +15,12 @@ import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.service.UserService;
 import com.triprecord.triprecord.user.entity.User;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +53,20 @@ public class RecordService {
         recordRepository.save(record);
         recordPlaceService.createRecordPlaces(record, request.placeIds());
         recordImageService.createRecordImages(record, request.recordImages());
+    }
+
+    @Transactional(readOnly = true)
+    public RecordPageResponse getRecordPage(Pageable pageable) {
+        Page<Record> records = recordRepository.findAllOrderById(pageable);
+        List<RecordResponse> recordResponses = new ArrayList<>();
+        for(Record record : records.getContent()) {
+            recordResponses.add(getRecordResponseData(record.getRecordId()));
+        }
+        return RecordPageResponse.builder()
+                .totalPages(records.getTotalPages())
+                .pageNumber(records.getNumber())
+                .recordList(recordResponses)
+                .build();
     }
 
     @Transactional(readOnly = true)
