@@ -7,6 +7,7 @@ import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
+import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
@@ -18,6 +19,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +73,30 @@ public class ScheduleService {
         request.scheduleDetails().stream()
                 .forEach(scheduleDetail -> scheduleDetailService.createScheduleDetail(schedule,
                         scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+    }
+
+    public SchedulePageGetResponse getSchedules(Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findAllOrderById(pageable);
+        List<ScheduleGetResponse> scheduleGetResponses = new ArrayList<>();
+
+        for (Schedule schedule : schedules.getContent()) {
+            long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+            long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+            scheduleGetResponses.add(ScheduleGetResponse.of(
+                    schedule.getCreatedUser(),
+                    schedule,
+                    schedule.getSchedulePlaces(),
+                    schedule.getScheduleDetails(),
+                    scheduleLikeCount,
+                    scheduleCommentCount
+            ));
+        }
+
+        return SchedulePageGetResponse.builder()
+                .totalPages(schedules.getTotalPages())
+                .pageNumber(schedules.getNumber())
+                .schedules(scheduleGetResponses)
+                .build();
     }
 
     public ScheduleGetResponse getSchedule(Long scheduleId) {
