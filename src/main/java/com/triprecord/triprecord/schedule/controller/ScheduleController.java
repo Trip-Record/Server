@@ -75,6 +75,16 @@ public class ScheduleController {
                 .body(new ResponseMessage("일정 삭제에 성공했습니다."));
     }
 
+    @DeleteMapping("{scheduleId}/likes")
+    public ResponseEntity<ResponseMessage> deleteScheduleLike(Authentication authentication,
+                                                              @PathVariable Long scheduleId) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleService.deleteScheduleLike(userId, scheduleId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("일정 좋아요 취소에 성공했습니다."));
+    }
+
     @PostMapping("{scheduleId}/likes")
     public ResponseEntity<ResponseMessage> createScheduleLike(Authentication authentication,
                                                               @PathVariable Long scheduleId) {

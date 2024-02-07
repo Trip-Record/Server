@@ -143,6 +143,13 @@ public class ScheduleService {
     }
 
     @Transactional
+    public void deleteScheduleLike(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+
+        scheduleLikeService.deleteScheduleLike(user, schedule);
+    }
+
     public void createScheduleLike(Long userId, Long scheduleId) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);

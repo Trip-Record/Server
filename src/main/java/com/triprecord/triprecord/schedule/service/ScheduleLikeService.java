@@ -22,6 +22,12 @@ public class ScheduleLikeService {
     }
 
     @Transactional
+    public void deleteScheduleLike(User user, Schedule schedule) {
+        ScheduleLike scheduleLike = scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule)
+                .orElseThrow(() -> new TripRecordException(ErrorCode.SCHEDULE_LIKE_NOT_FOUND));
+        scheduleLikeRepository.delete(scheduleLike);
+    }
+
     public void createScheduleLike(User user, Schedule schedule) {
         scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule).ifPresent(it -> {
             throw new TripRecordException(ErrorCode.SCHEDULE_ALREADY_LIKED);
