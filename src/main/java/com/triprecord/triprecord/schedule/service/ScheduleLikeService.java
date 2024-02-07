@@ -25,10 +25,9 @@ public class ScheduleLikeService {
     @Transactional
     public void createScheduleLike(User user, Schedule schedule) {
         Optional<ScheduleLike> scheduleLike = scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule);
-        if (scheduleLike.isPresent()) {
+        scheduleLike.ifPresent(it -> {
             throw new TripRecordException(ErrorCode.SCHEDULE_ALREADY_LIKED);
-        }
-
+        });
         ScheduleLike newScheduleLike = ScheduleLike.builder()
                 .schedule(schedule)
                 .user(user)
