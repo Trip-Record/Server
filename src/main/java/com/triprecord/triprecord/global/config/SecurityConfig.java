@@ -32,12 +32,10 @@ public class SecurityConfig {
             "/ranks/seasons",
             "/records",
             "/records/{recordId}",
-            "/records/{recordId}/comments",
             "/schedules",
             "/schedules/{scheduleId}",
-            "/schedules/{scheduleId}/comments",
-            "/trip-styles"
-            ,"/locations"
+            "/trip-styles",
+            "/locations"
     };
 
     @Bean

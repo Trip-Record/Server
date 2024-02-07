@@ -27,4 +27,15 @@ public class ScheduleLikeService {
                 .orElseThrow(() -> new TripRecordException(ErrorCode.SCHEDULE_LIKE_NOT_FOUND));
         scheduleLikeRepository.delete(scheduleLike);
     }
+
+    public void createScheduleLike(User user, Schedule schedule) {
+        scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule).ifPresent(it -> {
+            throw new TripRecordException(ErrorCode.SCHEDULE_ALREADY_LIKED);
+        });
+        ScheduleLike newScheduleLike = ScheduleLike.builder()
+                .schedule(schedule)
+                .user(user)
+                .build();
+        scheduleLikeRepository.save(newScheduleLike);
+    }
 }
