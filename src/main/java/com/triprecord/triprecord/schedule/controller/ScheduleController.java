@@ -6,6 +6,7 @@ import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
+import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final ScheduleCommentService scheduleCommentService;
 
     @PostMapping
     public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication,
@@ -101,7 +103,7 @@ public class ScheduleController {
                                                                  @PathVariable Long scheduleCommentId,
                                                                  @RequestBody @Valid ScheduleCommentContentRequest request) {
         Long userId = Long.valueOf(authentication.getName());
-        scheduleService.updateScheduleComment(userId, scheduleCommentId, request);
+        scheduleCommentService.updateScheduleComment(userId, scheduleCommentId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("댓글 수정에 성공했습니다."));
