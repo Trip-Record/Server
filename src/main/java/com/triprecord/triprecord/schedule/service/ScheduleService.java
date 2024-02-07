@@ -142,6 +142,13 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+    @Transactional
+    public void createScheduleLike(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+        scheduleLikeService.createScheduleLike(user, schedule);
+    }
+
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
         if (ScheduleRequest.placeIds() == null || ScheduleRequest.placeIds().isEmpty()) {
             return;
