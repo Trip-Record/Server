@@ -6,7 +6,6 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleLike;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
 import com.triprecord.triprecord.user.entity.User;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +23,7 @@ public class ScheduleLikeService {
 
     @Transactional
     public void createScheduleLike(User user, Schedule schedule) {
-        Optional<ScheduleLike> scheduleLike = scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule);
-        scheduleLike.ifPresent(it -> {
+        scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule).ifPresent(it -> {
             throw new TripRecordException(ErrorCode.SCHEDULE_ALREADY_LIKED);
         });
         ScheduleLike newScheduleLike = ScheduleLike.builder()
