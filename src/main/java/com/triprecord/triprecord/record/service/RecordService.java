@@ -64,7 +64,7 @@ public class RecordService {
         }
         return RecordPageResponse.builder()
                 .totalPages(records.getTotalPages())
-                .pageNumber(records.getNumber()+1)
+                .pageNumber(records.getNumber())
                 .recordList(recordResponses)
                 .build();
     }
