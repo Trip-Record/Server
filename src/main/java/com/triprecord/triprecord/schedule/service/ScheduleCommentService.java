@@ -1,7 +1,12 @@
 package com.triprecord.triprecord.schedule.service;
 
+import com.triprecord.triprecord.global.exception.ErrorCode;
+import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.schedule.entity.Schedule;
+import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.schedule.repository.ScheduleCommentRepository;
+import com.triprecord.triprecord.user.entity.User;
+import com.triprecord.triprecord.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,8 +17,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleCommentService {
 
     private final ScheduleCommentRepository scheduleCommentRepository;
+    private final UserService userService;
 
     public Long getScheduleCommentCount(Schedule schedule) {
         return scheduleCommentRepository.countByCommentedSchedule(schedule);
     }
+
+    @Transactional
+    public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
+        User user = userService.getUserOrException(userId);
+        ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
+        if (scheduleComment.getCommentedUser() != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
+        scheduleCommentRepository.delete(scheduleComment);
+    }
+
+    public ScheduleComment getScheduleCommentOrException(Long scheduleCommentId) {
+        return scheduleCommentRepository.findById(scheduleCommentId).orElseThrow(() ->
+                new TripRecordException(ErrorCode.SCHEDULE_COMMENT_NOT_FOUND));
+    }
+
 }

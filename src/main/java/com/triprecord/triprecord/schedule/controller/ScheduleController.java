@@ -5,6 +5,7 @@ import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
+import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final ScheduleCommentService scheduleCommentService;
 
     @PostMapping
     public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication,
@@ -93,6 +95,16 @@ public class ScheduleController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
+    }
+
+    @DeleteMapping("comments/{scheduleCommentId}")
+    public ResponseEntity<ResponseMessage> deleteScheduleComment(Authentication authentication,
+                                                                 @PathVariable Long scheduleCommentId) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleCommentService.deleteScheduleComment(userId, scheduleCommentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("댓글 삭제에 성공했습니다."));
     }
 
 }
