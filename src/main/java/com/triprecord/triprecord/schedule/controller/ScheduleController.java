@@ -1,6 +1,7 @@
 package com.triprecord.triprecord.schedule.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
+import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
@@ -93,6 +94,17 @@ public class ScheduleController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
+    }
+
+    @PostMapping("{scheduleId}/comments")
+    public ResponseEntity<ResponseMessage> createScheduleComment(Authentication authentication,
+                                                                 @PathVariable Long scheduleId,
+                                                                 @RequestBody @Valid ScheduleCommentCreateRequest request) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleService.createScheduleComment(userId, scheduleId, request);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("댓글 등록에 성공했습니다."));
     }
 
 }
