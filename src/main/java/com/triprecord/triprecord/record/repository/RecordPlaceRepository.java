@@ -32,7 +32,7 @@ public interface RecordPlaceRepository extends JpaRepository<RecordPlace, Long> 
     Optional<Integer> getCount(@Param("pid") Long placeId, @Param("date") String date);
 
     @Query(value = "select r.ranking from"
-            + "(select dense_rank() over (order by count(rp.place_id) desc ) as ranking, rp.place_id "
+            + "(select rank() over (order by count(rp.place_id) desc ) as ranking, rp.place_id "
             + "from record_place rp LEFT JOIN record re ON rp.record_id = re.record_id where DATE_FORMAT(trip_start_date, '%Y-%m') = :date "
             + "group by rp.place_id) r where r.place_id = :pid and r.ranking <= 7 ", nativeQuery = true)
     Optional<Integer> getRank(@Param("pid") Long placeId, @Param("date") String date);
