@@ -4,10 +4,12 @@ package com.triprecord.triprecord.record.controller;
 import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,6 +35,11 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("기록 생성에 성공했습니다."));
     }
 
+    @GetMapping()
+    public ResponseEntity<RecordPageResponse> getRecordPage(Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(pageable));
+    }
+
     @GetMapping("/{recordId}")
     public ResponseEntity<RecordResponse> getRecordData(@PathVariable Long recordId){
         return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordResponseData(recordId));
@@ -56,6 +63,12 @@ public class RecordController {
     public ResponseEntity<ResponseMessage> postLike(Authentication authentication, @PathVariable Long recordId){
         recordService.postLikeToRecord(Long.valueOf(authentication.getName()), recordId);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("좋아요 전송에 성공했습니다."));
+    }
+
+    @DeleteMapping("/{recordId}/likes")
+    public ResponseEntity<ResponseMessage> cancelLike(Authentication authentication, @PathVariable Long recordId) {
+        recordService.cancelLikeToRecord(Long.valueOf(authentication.getName()), recordId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("좋아요 취소에 성공했습니다."));
     }
 
 }

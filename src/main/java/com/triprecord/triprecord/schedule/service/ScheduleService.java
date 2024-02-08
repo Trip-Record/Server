@@ -7,20 +7,22 @@ import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
+import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -64,10 +66,37 @@ public class ScheduleService {
         places.stream()
                 .forEach(place -> schedulePlaceService.createSchedulePlace(schedule, place));
 
-        if (request.scheduleDetails().isEmpty()) return;
+        if (request.scheduleDetails().isEmpty()) {
+            return;
+        }
 
         request.scheduleDetails().stream()
-                .forEach(scheduleDetail -> scheduleDetailService.createScheduleDetail(schedule, scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+                .forEach(scheduleDetail -> scheduleDetailService.createScheduleDetail(schedule,
+                        scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
+    }
+
+    public SchedulePageGetResponse getSchedules(Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findAllOrderById(pageable);
+        List<ScheduleGetResponse> scheduleGetResponses = new ArrayList<>();
+
+        for (Schedule schedule : schedules.getContent()) {
+            long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+            long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+            scheduleGetResponses.add(ScheduleGetResponse.of(
+                    schedule.getCreatedUser(),
+                    schedule,
+                    schedule.getSchedulePlaces(),
+                    schedule.getScheduleDetails(),
+                    scheduleLikeCount,
+                    scheduleCommentCount
+            ));
+        }
+
+        return SchedulePageGetResponse.builder()
+                .totalPages(schedules.getTotalPages())
+                .pageNumber(schedules.getNumber())
+                .schedules(scheduleGetResponses)
+                .build();
     }
 
     public ScheduleGetResponse getSchedule(Long scheduleId) {
@@ -113,14 +142,32 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+    @Transactional
+    public void deleteScheduleLike(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+
+        scheduleLikeService.deleteScheduleLike(user, schedule);
+    }
+
+    public void createScheduleLike(Long userId, Long scheduleId) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+        scheduleLikeService.createScheduleLike(user, schedule);
+    }
+
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
-        if (ScheduleRequest.placeIds() == null || ScheduleRequest.placeIds().isEmpty()) return;
+        if (ScheduleRequest.placeIds() == null || ScheduleRequest.placeIds().isEmpty()) {
+            return;
+        }
 
         schedulePlaceService.updateSchedulePlace(schedule, ScheduleRequest);
     }
 
     private void updateScheduleDetail(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
-        if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) return;
+        if (ScheduleRequest.scheduleDetails() == null || ScheduleRequest.scheduleDetails().isEmpty()) {
+            return;
+        }
 
         scheduleDetailService.updateScheduleDetail(schedule, ScheduleRequest);
     }
