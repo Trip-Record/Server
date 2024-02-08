@@ -111,7 +111,7 @@ public class UserService {
 
         return RecordPageResponse.builder()
                 .totalPages(records.getTotalPages())
-                .pageNumber(records.getNumber() + 1)
+                .pageNumber(records.getNumber())
                 .recordList(userRecordGetResponse)
                 .build();
     }
