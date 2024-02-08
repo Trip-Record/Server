@@ -8,6 +8,7 @@ import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -36,13 +37,15 @@ public class RecordController {
     }
 
     @GetMapping()
-    public ResponseEntity<RecordPageResponse> getRecordPage(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(pageable));
+    public ResponseEntity<RecordPageResponse> getRecordPage(Authentication authentication, Pageable pageable) {
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(userId, pageable));
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<RecordResponse> getRecordData(@PathVariable Long recordId){
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordResponseData(recordId));
+    public ResponseEntity<RecordResponse> getRecordData(Authentication authentication, @PathVariable Long recordId){
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordResponseData(userId, recordId));
     }
 
     @DeleteMapping("/{recordId}")
