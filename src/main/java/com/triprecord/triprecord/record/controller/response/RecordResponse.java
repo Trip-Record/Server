@@ -16,6 +16,7 @@ public record RecordResponse(
         LocalDate tripStartDate,
         LocalDate tripEndDate,
         List<RecordImageData> recordImages,
+        Boolean userLiked,
         Long likeCount,
         Long commentCount
 
@@ -23,6 +24,7 @@ public record RecordResponse(
     public static RecordResponse fromRecordData(Record record,
                                                 List<PlaceBasicData> recordPlaces,
                                                 List<RecordImageData> images,
+                                                Boolean userLiked,
                                                 Long likeCount,
                                                 Long commentCount){
         return new RecordResponse(
@@ -34,6 +36,7 @@ public record RecordResponse(
                 record.getTripStartDate(),
                 record.getTripEndDate(),
                 images,
+                userLiked,
                 likeCount,
                 commentCount
         );
