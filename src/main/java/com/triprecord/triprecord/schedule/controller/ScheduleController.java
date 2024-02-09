@@ -101,6 +101,17 @@ public class ScheduleController {
                 .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
     }
 
+    @PostMapping("{scheduleId}/comments")
+    public ResponseEntity<ResponseMessage> createScheduleComment(Authentication authentication,
+                                                                 @PathVariable Long scheduleId,
+                                                                 @RequestBody @Valid ScheduleCommentContentRequest request) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleService.createScheduleComment(userId, scheduleId, request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseMessage("댓글 등록에 성공했습니다."));
+    }
+
     @PatchMapping("comments/{scheduleCommentId}")
     public ResponseEntity<ResponseMessage> updateScheduleComment(Authentication authentication,
                                                                  @PathVariable Long scheduleCommentId,

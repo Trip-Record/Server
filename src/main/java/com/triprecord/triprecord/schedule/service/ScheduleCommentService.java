@@ -25,13 +25,13 @@ public class ScheduleCommentService {
     }
 
     @Transactional
-    public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
-        User user = userService.getUserOrException(userId);
-        ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
-        if (scheduleComment.getCommentedUser() != user) {
-            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
-        }
-        scheduleCommentRepository.delete(scheduleComment);
+    public void createScheduleComment(User user, Schedule schedule, String content) {
+        ScheduleComment scheduleComment = ScheduleComment.builder()
+                .user(user)
+                .schedule(schedule)
+                .content(content)
+                .build();
+        scheduleCommentRepository.save(scheduleComment);
     }
 
     @Transactional
@@ -46,6 +46,16 @@ public class ScheduleCommentService {
             throw new TripRecordException(ErrorCode.SCHEDULE_COMMENT_DUPLICATE);
         }
         scheduleComment.updateContent(content);
+    }
+  
+    @Transactional
+    public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
+        User user = userService.getUserOrException(userId);
+        ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
+        if (scheduleComment.getCommentedUser() != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
+        scheduleCommentRepository.delete(scheduleComment);
     }
 
     public ScheduleComment getScheduleCommentOrException(Long scheduleCommentId) {
