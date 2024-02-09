@@ -16,6 +16,7 @@ public record ScheduleGetResponse(
         String scheduleStartDate,
         String scheduleEndDate,
         List<ScheduleDetailGetResponse> scheduleDetails,
+        Boolean isUserLiked,
         Long scheduleLikeCount,
         Long scheduleCommentCount
 ) {
@@ -23,6 +24,7 @@ public record ScheduleGetResponse(
                                          Schedule schedule,
                                          List<SchedulePlace> schedulePlaces,
                                          List<ScheduleDetail> scheduleDetails,
+                                         Boolean userLiked,
                                          Long scheduleLikeCount,
                                          Long scheduleCommentCount) {
         return new ScheduleGetResponse(
@@ -37,6 +39,7 @@ public record ScheduleGetResponse(
                 scheduleDetails.stream()
                         .map(ScheduleDetailGetResponse::of)
                         .toList(),
+                userLiked,
                 scheduleLikeCount,
                 scheduleCommentCount
         );
