@@ -16,7 +16,6 @@ public class RecordCommentService {
 
     private final RecordCommentRepository recordCommentRepository;
 
-
     public Long getRecordCommentCount(Record record){
         return recordCommentRepository.countByCommentedRecord(record);
     }
@@ -26,7 +25,18 @@ public class RecordCommentService {
                 ()->new TripRecordException(ErrorCode.RECORD_COMMENT_NOT_FOUND));
     }
 
+    public void createRecordComment(User user, Record record, String content) {
+        RecordComment comment = RecordComment.builder()
+                .user(user)
+                .record(record)
+                .commentContent(content)
+                .build();
+        recordCommentRepository.save(comment);
+    }
+  
     public void deleteRecordComment(RecordComment comment) {
         recordCommentRepository.delete(comment);
     }
+
+    
 }

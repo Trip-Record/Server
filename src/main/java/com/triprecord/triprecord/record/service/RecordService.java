@@ -114,6 +114,13 @@ public class RecordService {
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
     }
+  
+    @Transactional
+    public void postCommentToRecord(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        recordCommentService.createRecordComment(user, record, content);
+    }
 
     @Transactional
     public void deleteCommentFromRecord(Long userId, Long recordCommentId) {
