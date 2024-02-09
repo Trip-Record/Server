@@ -90,8 +90,7 @@ public class UserService {
     }
 
     public SchedulePageGetResponse getUserSchedules(Long userId, Pageable pageable){
-        User user = getUserOrException(userId);
-        Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(user, pageable);
+        Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(userId, pageable);
         List<ScheduleGetResponse> userScheduleGetResponse = new ArrayList<>();
 
         for(Schedule schedule : schedules.getContent()){
