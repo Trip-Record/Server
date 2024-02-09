@@ -96,8 +96,7 @@ public class UserService {
     }
 
     public RecordPageResponse getUserRecords(Long userId, Pageable pageable){
-        User user = getUserOrException(userId);
-        Page<Record> records = recordRepository.findAllByCreatedUser(user, pageable);
+        Page<Record> records = recordRepository.findAllByCreatedUser(userId, pageable);
         List<RecordResponse> userRecordGetResponse = new ArrayList<>();
 
         for(Record record : records.getContent()){
