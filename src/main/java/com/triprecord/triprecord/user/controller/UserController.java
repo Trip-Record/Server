@@ -5,6 +5,7 @@ import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,8 +53,8 @@ public class UserController {
     }
 
     @GetMapping("/schedules")
-    public ResponseEntity<SchedulePageGetResponse> userSchedules(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
-        SchedulePageGetResponse response = userService.getUserSchedules(Long.valueOf(authentication.getName()), pageable);
+    public ResponseEntity<UserSchedulePageResponse> userSchedules(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
+        UserSchedulePageResponse response = userService.getUserSchedules(Long.valueOf(authentication.getName()), pageable);
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }

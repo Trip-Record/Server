@@ -9,6 +9,7 @@ import com.triprecord.triprecord.record.repository.RecordLikeRepository;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleInfo;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
@@ -18,6 +19,7 @@ import com.triprecord.triprecord.schedule.service.ScheduleLikeService;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -89,15 +91,14 @@ public class UserService {
         return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public SchedulePageGetResponse getUserSchedules(Long userId, Pageable pageable){
+    public UserSchedulePageResponse getUserSchedules(Long userId, Pageable pageable){
         Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(userId, pageable);
-        List<ScheduleGetResponse> userScheduleGetResponse = new ArrayList<>();
+        List<ScheduleInfo> userScheduleGetResponse = new ArrayList<>();
 
         for(Schedule schedule : schedules.getContent()){
             long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
             long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
-            userScheduleGetResponse.add(ScheduleGetResponse.of(
-                    schedule.getCreatedUser(),
+            userScheduleGetResponse.add(ScheduleInfo.of(
                     schedule,
                     schedule.getSchedulePlaces(),
                     schedule.getScheduleDetails(),
@@ -106,10 +107,10 @@ public class UserService {
             ));
         }
 
-        return SchedulePageGetResponse.builder()
+        return UserSchedulePageResponse.builder()
                 .totalPages(schedules.getTotalPages())
                 .pageNumber(schedules.getNumber())
-                .schedules(userScheduleGetResponse)
+                .scheduleInfoList(userScheduleGetResponse)
                 .build();
     }
 
