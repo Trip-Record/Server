@@ -57,7 +57,7 @@ public class PlaceService {
             Integer visitCount = recordPlaceRepository.getCount(place.getPlaceId(), date).orElseGet(() -> 0);
             Integer rank = recordPlaceRepository.getRank(place.getPlaceId(), date).orElseGet(() -> 0);
             if (rank <= 7 && rank != 0) {
-                placeRankGetResponseList.add(PlaceRankGetResponse.of(place, visitCount, rank));
+                placeRankGetResponseList.add(PlaceRankGetResponse.of(rank, visitCount, place));
             }
         }
         Collections.sort(
@@ -77,7 +77,7 @@ public class PlaceService {
             Integer rank = recordPlaceRepository.getRanksBySeason(dates.get(0), dates.get(1), dates.get(2),
                     place.getPlaceId()).orElseGet(() -> 0);
             if (rank <= 7 && rank != 0) {
-                placeRankGetResponseList.add(PlaceRankGetResponse.of(place, visitCount, rank));
+                placeRankGetResponseList.add(PlaceRankGetResponse.of(rank, visitCount, place));
             }
         }
         Collections.sort(
