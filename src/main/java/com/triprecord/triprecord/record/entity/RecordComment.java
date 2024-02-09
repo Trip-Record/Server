@@ -40,4 +40,8 @@ public class RecordComment extends EntityBaseTime {
         this.commentedRecord = record;
         this.commentedUser = user;
     }
+
+    public void updateContent(String newContent) {
+        this.commentContent = newContent;
+    }
 }

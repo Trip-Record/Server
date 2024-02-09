@@ -2,12 +2,14 @@ package com.triprecord.triprecord.record.controller;
 
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
+import com.triprecord.triprecord.record.controller.request.RecordCommentContent;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,13 +39,15 @@ public class RecordController {
     }
 
     @GetMapping()
-    public ResponseEntity<RecordPageResponse> getRecordPage(Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(pageable));
+    public ResponseEntity<RecordPageResponse> getRecordPage(Authentication authentication, Pageable pageable) {
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordPage(userId, pageable));
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<RecordResponse> getRecordData(@PathVariable Long recordId){
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordResponseData(recordId));
+    public ResponseEntity<RecordResponse> getRecordData(Authentication authentication, @PathVariable Long recordId){
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordResponseData(userId, recordId));
     }
 
     @DeleteMapping("/{recordId}")
@@ -57,6 +62,28 @@ public class RecordController {
                                                         @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
+    }
+  
+    @PostMapping("/{recordId}/comments")
+    public ResponseEntity<ResponseMessage> postComment(Authentication authentication,
+                                                       @PathVariable Long recordId,
+                                                       @RequestBody @Valid RecordCommentContent request) {
+        recordService.postCommentToRecord(Long.valueOf(authentication.getName()), recordId, request.commentContent());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("댓글 전송에 성공했습니다."));
+    }
+
+    @DeleteMapping("/comments/{recordCommentId}")
+    public ResponseEntity<ResponseMessage> deleteRecordComment(Authentication authentication, @PathVariable Long recordCommentId) {
+        recordService.deleteCommentFromRecord(Long.valueOf(authentication.getName()), recordCommentId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 댓글 삭제에 성공했습니다."));
+    }
+
+    @PatchMapping("/comments/{recordCommentId}")
+    public ResponseEntity<ResponseMessage> modifyRecordComment(Authentication authentication,
+                                                               @PathVariable Long recordCommentId,
+                                                               @RequestBody @Valid RecordCommentContent request) {
+        recordService.modifyRecordComment(Long.valueOf(authentication.getName()), recordCommentId, request.commentContent());
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("댓글 수정에 성공했습니다."));
     }
 
     @PostMapping("/{recordId}/likes")
