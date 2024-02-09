@@ -2,7 +2,7 @@ package com.triprecord.triprecord.record.controller;
 
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
-import com.triprecord.triprecord.record.controller.request.CommentContent;
+import com.triprecord.triprecord.record.controller.request.RecordCommentContent;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
@@ -64,7 +64,7 @@ public class RecordController {
     @PostMapping("/{recordId}/comments")
     public ResponseEntity<ResponseMessage> postComment(Authentication authentication,
                                                        @PathVariable Long recordId,
-                                                       @RequestBody @Valid CommentContent request) {
+                                                       @RequestBody @Valid RecordCommentContent request) {
         recordService.postCommentToRecord(Long.valueOf(authentication.getName()), recordId, request.commentContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("댓글 전송에 성공했습니다."));
     }
