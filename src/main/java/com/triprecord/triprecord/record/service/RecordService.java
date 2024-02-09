@@ -105,6 +105,13 @@ public class RecordService {
         modifyImage(record, request.deleteImages(), request.addImages());
     }
 
+    @Transactional
+    public void postCommentToRecord(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        recordCommentService.createRecordComment(user, record, content);
+    }
+
     public void postLikeToRecord(Long userId, Long recordId) {
         User user  = userService.getUserOrException(userId);
         Record record = getRecordOrException(recordId);

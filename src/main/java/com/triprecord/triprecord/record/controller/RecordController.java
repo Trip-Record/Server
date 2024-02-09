@@ -2,6 +2,7 @@ package com.triprecord.triprecord.record.controller;
 
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
+import com.triprecord.triprecord.record.controller.request.CommentContent;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -57,6 +59,14 @@ public class RecordController {
                                                         @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
+    }
+
+    @PostMapping("/{recordId}/comments")
+    public ResponseEntity<ResponseMessage> postComment(Authentication authentication,
+                                                       @PathVariable Long recordId,
+                                                       @RequestBody @Valid CommentContent request) {
+        recordService.postCommentToRecord(Long.valueOf(authentication.getName()), recordId, request.commentContent());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("댓글 전송에 성공했습니다."));
     }
 
     @PostMapping("/{recordId}/likes")
