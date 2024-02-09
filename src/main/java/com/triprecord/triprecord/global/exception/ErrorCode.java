@@ -21,6 +21,7 @@ public enum ErrorCode {
 
     RECORD_ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 남긴 기록입니다."),
     RECORD_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 기록에 좋아요를 남기지 않았습니다."),
+    RECORD_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     INVALID_DATE(HttpStatus.BAD_REQUEST, "기간이 잘못되었습니다."),
     INVALID_RECORD_PLACE_SIZE(HttpStatus.BAD_REQUEST, "기록할 수 있는 최대 장소 수를 초과하였습니다."),
     INVALID_RECORD_IMAGE_SIZE(HttpStatus.BAD_REQUEST, "기록할 수 있는 최대 사진 수를 초과하였습니다."),
