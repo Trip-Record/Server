@@ -16,7 +16,7 @@ public record RecordResponse(
         LocalDate tripStartDate,
         LocalDate tripEndDate,
         List<RecordImageData> recordImages,
-        Boolean userLiked,
+        Boolean isUserLiked,
         Long likeCount,
         Long commentCount
 
