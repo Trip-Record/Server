@@ -39,4 +39,8 @@ public class ScheduleComment extends EntityBaseTime {
         this.commentedSchedule = schedule;
         this.commentedUser = user;
     }
+
+    public void updateContent(String content) {
+        this.scheduleCommentContent = content;
+    }
 }
