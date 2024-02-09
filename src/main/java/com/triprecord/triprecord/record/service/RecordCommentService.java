@@ -27,6 +27,9 @@ public class RecordCommentService {
     }
 
     public void updateRecordComment(RecordComment comment, String newContent) {
+        if(comment.getCommentContent().equals(newContent)) {
+            throw new TripRecordException(ErrorCode.RECORD_COMMENT_DUPLICATE);
+        }
         comment.updateContent(newContent);
     }
 }
