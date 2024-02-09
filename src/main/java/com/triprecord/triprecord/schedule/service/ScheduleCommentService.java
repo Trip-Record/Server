@@ -3,12 +3,17 @@ package com.triprecord.triprecord.schedule.service;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleCommentGetResponse;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleCommentPageGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.schedule.repository.ScheduleCommentRepository;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.service.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,20 @@ public class ScheduleCommentService {
 
     public Long getScheduleCommentCount(Schedule schedule) {
         return scheduleCommentRepository.countByCommentedSchedule(schedule);
+    }
+
+    public ScheduleCommentPageGetResponse getScheduleComments(Schedule schedule, Pageable pageable) {
+        Page<ScheduleComment> scheduleComments = scheduleCommentRepository.findAllByCommentedSchedule(schedule,
+                pageable);
+        List<ScheduleCommentGetResponse> scheduleGetResponses = scheduleComments.stream()
+                .map(ScheduleCommentGetResponse::of)
+                .toList();
+
+        return ScheduleCommentPageGetResponse.builder()
+                .totalPages(scheduleComments.getTotalPages())
+                .pageNumber(scheduleComments.getNumber())
+                .scheduleComments(scheduleGetResponses)
+                .build();
     }
 
     @Transactional
@@ -47,7 +66,7 @@ public class ScheduleCommentService {
         }
         scheduleComment.updateContent(content);
     }
-  
+
     @Transactional
     public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
         User user = userService.getUserOrException(userId);

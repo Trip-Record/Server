@@ -4,6 +4,7 @@ import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleCommentPageGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
@@ -54,8 +55,10 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<SchedulePageGetResponse> getSchedules(Authentication authentication, @PageableDefault(size = 5) Pageable pageable) {
-        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+    public ResponseEntity<SchedulePageGetResponse> getSchedules(Authentication authentication,
+                                                                @PageableDefault(size = 5) Pageable pageable) {
+        Optional<Long> userId = Optional.ofNullable(
+                (authentication == null) ? null : Long.parseLong(authentication.getName()));
         SchedulePageGetResponse response = scheduleService.getSchedules(userId, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -63,8 +66,10 @@ public class ScheduleController {
     }
 
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleGetResponse> getSchedule(Authentication authentication, @PathVariable Long scheduleId) {
-        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+    public ResponseEntity<ScheduleGetResponse> getSchedule(Authentication authentication,
+                                                           @PathVariable Long scheduleId) {
+        Optional<Long> userId = Optional.ofNullable(
+                (authentication == null) ? null : Long.parseLong(authentication.getName()));
         ScheduleGetResponse response = scheduleService.getSchedule(userId, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -99,6 +104,15 @@ public class ScheduleController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
+    }
+
+    @GetMapping("{scheduleId}/comments")
+    public ResponseEntity<ScheduleCommentPageGetResponse> getScheduleComments(@PathVariable Long scheduleId,
+                                                                              @PageableDefault(size = 5) Pageable pageable) {
+        ScheduleCommentPageGetResponse response = scheduleService.getScheduleComments(scheduleId, pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @PostMapping("{scheduleId}/comments")
