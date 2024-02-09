@@ -2,6 +2,7 @@ package com.triprecord.triprecord.schedule.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.schedule.repository.ScheduleCommentRepository;
@@ -31,6 +32,20 @@ public class ScheduleCommentService {
             throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
         }
         scheduleCommentRepository.delete(scheduleComment);
+    }
+
+    @Transactional
+    public void updateScheduleComment(Long userId, Long scheduleCommentId, ScheduleCommentContentRequest request) {
+        User user = userService.getUserOrException(userId);
+        ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
+        if (scheduleComment.getCommentedUser() != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
+        String content = request.content();
+        if (scheduleComment.getScheduleCommentContent().equals(content)) {
+            throw new TripRecordException(ErrorCode.SCHEDULE_COMMENT_DUPLICATE);
+        }
+        scheduleComment.updateContent(content);
     }
 
     public ScheduleComment getScheduleCommentOrException(Long scheduleCommentId) {
