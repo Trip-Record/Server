@@ -4,7 +4,7 @@ import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
-import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentCreateRequest;
+import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
@@ -159,7 +159,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void createScheduleComment(Long userId, Long scheduleId, ScheduleCommentCreateRequest request) {
+    public void createScheduleComment(Long userId, Long scheduleId, ScheduleCommentContentRequest request) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
         scheduleCommentService.createScheduleComment(user, schedule, request.content());
