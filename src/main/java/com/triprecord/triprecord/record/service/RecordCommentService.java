@@ -1,6 +1,8 @@
 package com.triprecord.triprecord.record.service;
 
 
+import com.triprecord.triprecord.global.exception.ErrorCode;
+import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.repository.RecordCommentRepository;
@@ -18,6 +20,11 @@ public class RecordCommentService {
         return recordCommentRepository.countByCommentedRecord(record);
     }
 
+    public RecordComment getRecordCommentOrException(Long recordId) {
+        return recordCommentRepository.findById(recordId).orElseThrow(
+                ()->new TripRecordException(ErrorCode.RECORD_COMMENT_NOT_FOUND));
+    }
+
     public void createRecordComment(User user, Record record, String content) {
         RecordComment comment = RecordComment.builder()
                 .user(user)
@@ -26,4 +33,10 @@ public class RecordCommentService {
                 .build();
         recordCommentRepository.save(comment);
     }
+  
+    public void deleteRecordComment(RecordComment comment) {
+        recordCommentRepository.delete(comment);
+    }
+
+    
 }

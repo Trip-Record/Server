@@ -63,13 +63,19 @@ public class RecordController {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
     }
-
+  
     @PostMapping("/{recordId}/comments")
     public ResponseEntity<ResponseMessage> postComment(Authentication authentication,
                                                        @PathVariable Long recordId,
                                                        @RequestBody @Valid RecordCommentContent request) {
         recordService.postCommentToRecord(Long.valueOf(authentication.getName()), recordId, request.commentContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("댓글 전송에 성공했습니다."));
+    }
+
+    @DeleteMapping("/comments/{recordCommentId}")
+    public ResponseEntity<ResponseMessage> deleteRecordComment(Authentication authentication, @PathVariable Long recordCommentId) {
+        recordService.deleteCommentFromRecord(Long.valueOf(authentication.getName()), recordCommentId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 댓글 삭제에 성공했습니다."));
     }
 
     @PostMapping("/{recordId}/likes")
