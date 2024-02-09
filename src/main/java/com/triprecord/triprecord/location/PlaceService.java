@@ -86,56 +86,56 @@ public class PlaceService {
         return placeRankGetResponseList;
     }
 
-        private List<String> getSeasonMonth (String year, String season){
+    private List<String> getSeasonMonth (String year, String season){
 
-            if (season.equals("봄")) {
-                String startMonth = "03";
-                String middleMonth = "04";
-                String endMonth = "05";
-                List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
+        if (season.equals("봄")) {
+            String startMonth = "03";
+            String middleMonth = "04";
+            String endMonth = "05";
+            List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
 
-                return dateList;
+            return dateList;
 
-            } else if (season.equals("여름")) {
-                String startMonth = "06";
-                String middleMonth = "07";
-                String endMonth = "08";
-                List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
+        } else if (season.equals("여름")) {
+            String startMonth = "06";
+            String middleMonth = "07";
+            String endMonth = "08";
+            List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
 
-                return dateList;
+            return dateList;
 
-            } else if (season.equals("가을")) {
-                String startMonth = "09";
-                String middleMonth = "10";
-                String endMonth = "11";
-                List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
+        } else if (season.equals("가을")) {
+            String startMonth = "09";
+            String middleMonth = "10";
+            String endMonth = "11";
+            List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
 
-                return dateList;
+            return dateList;
 
-            } else if (season.equals("겨울")) {
-                String startMonth = "01";
-                String middleMonth = "02";
-                String endMonth = "12";
+        } else if (season.equals("겨울")) {
+            String startMonth = "01";
+            String middleMonth = "02";
+            String endMonth = "12";
 
-                List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
-
-                return dateList;
-            }
-            return null;
-        }
-
-        private List<String> getDateFormat (String year, String startMonth, String middleMonth, String endMonth){
-            List<String> dateList = new ArrayList<>();
-
-            String startDate = String.format("%s-%s", year, startMonth);
-            String middleDate = String.format("%s-%s", year, middleMonth);
-            String endDate = String.format("%s-%s", year, endMonth);
-
-            dateList.add(startDate);
-            dateList.add(middleDate);
-            dateList.add(endDate);
+            List<String> dateList = getDateFormat(year, startMonth, middleMonth, endMonth);
 
             return dateList;
         }
+        return null;
     }
+
+    private List<String> getDateFormat (String year, String startMonth, String middleMonth, String endMonth){
+        List<String> dateList = new ArrayList<>();
+
+        String startDate = String.format("%s-%s", year, startMonth);
+        String middleDate = String.format("%s-%s", year, middleMonth);
+        String endDate = String.format("%s-%s", year, endMonth);
+
+        dateList.add(startDate);
+        dateList.add(middleDate);
+        dateList.add(endDate);
+
+        return dateList;
+    }
+}
 
