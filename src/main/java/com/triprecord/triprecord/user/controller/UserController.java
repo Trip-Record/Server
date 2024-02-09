@@ -5,6 +5,7 @@ import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserRecordPageResponse;
 import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,8 +50,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(Long.valueOf(authentication.getName())));
     }
     @GetMapping("/records")
-    public ResponseEntity<RecordPageResponse> getUserRecords(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
-        RecordPageResponse response = userService.getUserRecords(Long.valueOf(authentication.getName()), pageable);
+    public ResponseEntity<UserRecordPageResponse> getUserRecords(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
+        UserRecordPageResponse response = userService.getUserRecords(Long.valueOf(authentication.getName()), pageable);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

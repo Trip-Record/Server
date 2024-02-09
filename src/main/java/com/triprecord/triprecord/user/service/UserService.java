@@ -9,6 +9,7 @@ import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
+import com.triprecord.triprecord.record.dto.RecordInfo;
 import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.repository.RecordLikeRepository;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
@@ -22,6 +23,7 @@ import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.dto.response.UserRecordPageResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -95,9 +97,9 @@ public class UserService {
         return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public RecordPageResponse getUserRecords(Long userId, Pageable pageable){
+    public UserRecordPageResponse getUserRecords(Long userId, Pageable pageable){
         Page<Record> records = recordRepository.findAllByCreatedUser(userId, pageable);
-        List<RecordResponse> userRecordGetResponse = new ArrayList<>();
+        List<RecordInfo> userRecordGetResponse = new ArrayList<>();
 
         for(Record record : records.getContent()){
             List<PlaceBasicData> userRecordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
@@ -106,13 +108,14 @@ public class UserService {
             Long recordLikeCount = recordLikeService.getRecordLikeCount(record);
             Long recordCommentCount = recordCommentService.getRecordCommentCount(record);
 
-            userRecordGetResponse.add(RecordResponse.fromRecordData(record, userRecordPlaceData, userRecordImageData, recordLikeCount, recordCommentCount));
+            userRecordGetResponse.add(
+                    RecordInfo.of(record, userRecordPlaceData, userRecordImageData, recordLikeCount, recordCommentCount));
         }
 
-        return RecordPageResponse.builder()
+        return UserRecordPageResponse.builder()
                 .totalPages(records.getTotalPages())
                 .pageNumber(records.getNumber())
-                .recordList(userRecordGetResponse)
+                .recordInfoList(userRecordGetResponse)
                 .build();
     }
 
