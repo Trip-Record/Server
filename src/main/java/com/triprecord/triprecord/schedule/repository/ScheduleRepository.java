@@ -17,6 +17,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s ORDER BY s.scheduleId DESC")
     Page<Schedule> findAllOrderById(Pageable pageable);
 
-    @Query("SELECT s FROM Schedule s WHERE s.createdUser.userId = :uid ORDER BY s.scheduleId DESC ")
-    Page<Schedule> findAllByCreatedUser(@Param("uid") Long userId, Pageable pageable);
+    Page<Schedule> findAllByCreatedUser(User user, Pageable pageable);
 }
