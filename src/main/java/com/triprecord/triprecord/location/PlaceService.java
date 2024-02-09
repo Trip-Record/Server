@@ -79,8 +79,6 @@ public class PlaceService {
             if (rank <= 7 && rank != 0) {
                 placeRankGetResponseList.add(PlaceRankGetResponse.of(place, visitCount, rank));
             }
-
-            System.out.println(dates.get(0) + " " + dates.get(1) + " " + dates.get(2));
         }
         Collections.sort(
                 placeRankGetResponseList, Comparator.comparing(PlaceRankGetResponse::rank));
