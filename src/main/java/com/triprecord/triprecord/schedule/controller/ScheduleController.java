@@ -103,7 +103,7 @@ public class ScheduleController {
         Long userId = Long.valueOf(authentication.getName());
         scheduleService.createScheduleComment(userId, scheduleId, request);
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .body(new ResponseMessage("댓글 등록에 성공했습니다."));
     }
 
