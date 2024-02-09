@@ -3,15 +3,16 @@ package com.triprecord.triprecord.location.dto;
 import com.triprecord.triprecord.location.entity.Place;
 
 public record PlaceRankGetResponse(
-        PlaceBasicData placeBasicData,
+        Integer rank,
         Integer visitCount,
-        Integer rank
+        PlaceBasicData placeBasicData
+
 ) {
-    public static PlaceRankGetResponse of(Place place, Integer visitCount, Integer rank){
+    public static PlaceRankGetResponse of(Integer rank, Integer visitCount, Place place){
         return new PlaceRankGetResponse(
-                PlaceBasicData.fromPlace(place),
+                rank,
                 visitCount,
-                rank
+                PlaceBasicData.fromPlace(place)
         );
     }
 }

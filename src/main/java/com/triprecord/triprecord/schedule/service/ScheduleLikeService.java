@@ -2,6 +2,7 @@ package com.triprecord.triprecord.schedule.service;
 
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
+import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleLike;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
@@ -16,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleLikeService {
 
     private final ScheduleLikeRepository scheduleLikeRepository;
+
+    public Boolean findUserLikedSchedule(Schedule schedule, User user) {
+        return scheduleLikeRepository.findByLikedUserAndLikedSchedule(user, schedule).isPresent();
+    }
 
     public Long getScheduleLikeCount(Schedule schedule) {
         return scheduleLikeRepository.countByLikedSchedule(schedule);

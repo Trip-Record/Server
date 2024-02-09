@@ -19,6 +19,10 @@ public class RecordLikeService {
     private final RecordLikeRepository recordLikeRepository;
 
 
+    public Boolean findUserLikedRecord(Record record, User user) {
+        return recordLikeRepository.findByLikedRecordAndLikedUser(record, user).isPresent();
+    }
+
     public Long getRecordLikeCount(Record record){
         return recordLikeRepository.countByLikedRecord(record);
     }

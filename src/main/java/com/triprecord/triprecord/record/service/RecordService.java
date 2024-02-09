@@ -10,6 +10,7 @@ import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
+import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.service.UserService;
@@ -17,10 +18,13 @@ import com.triprecord.triprecord.user.entity.User;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,11 +60,11 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public RecordPageResponse getRecordPage(Pageable pageable) {
+    public RecordPageResponse getRecordPage(Optional<Long> userId, Pageable pageable) {
         Page<Record> records = recordRepository.findAllOrderById(pageable);
         List<RecordResponse> recordResponses = new ArrayList<>();
         for(Record record : records.getContent()) {
-            recordResponses.add(getRecordResponseData(record.getRecordId()));
+            recordResponses.add(getRecordResponseData(userId, record.getRecordId()));
         }
         return RecordPageResponse.builder()
                 .totalPages(records.getTotalPages())
@@ -70,16 +74,22 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public RecordResponse getRecordResponseData(Long recordId) {
+    public RecordResponse getRecordResponseData(Optional<Long> userId, Long recordId) {
         Record record = getRecordOrException(recordId);
 
         List<PlaceBasicData> recordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
         List<RecordImageData> recordImageData = recordImageService.findRecordImageData(record);
 
+        Boolean userRecordLiked = findUserRecordLiked(userId, record);
         Long likeCount = recordLikeService.getRecordLikeCount(record);
         Long commentCount = recordCommentService.getRecordCommentCount(record);
 
-        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, likeCount, commentCount);
+        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, userRecordLiked, likeCount, commentCount);
+    }
+
+    private Boolean findUserRecordLiked(Optional<Long> userId, Record record) {
+        if(userId.isPresent()) return recordLikeService.findUserLikedRecord(record, userService.getUserOrException(userId.get()));
+        return false;
     }
 
     @Transactional
@@ -103,6 +113,32 @@ public class RecordService {
 
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
+    }
+  
+    @Transactional
+    public void postCommentToRecord(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        Record record = getRecordOrException(recordId);
+        recordCommentService.createRecordComment(user, record, content);
+    }
+
+    @Transactional
+    public void deleteCommentFromRecord(Long userId, Long recordCommentId) {
+        User user = userService.getUserOrException(userId);
+
+        RecordComment comment = recordCommentService.getRecordCommentOrException(recordCommentId);
+        checkSameUser(comment.getCommentedUser(), user);
+
+        recordCommentService.deleteRecordComment(comment);
+    }
+
+    @Transactional
+    public void modifyRecordComment(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        RecordComment comment = recordCommentService.getRecordCommentOrException(recordId);
+        checkSameUser(comment.getCommentedUser(), user);
+
+        recordCommentService.updateRecordComment(comment, content);
     }
 
     public void postLikeToRecord(Long userId, Long recordId) {
