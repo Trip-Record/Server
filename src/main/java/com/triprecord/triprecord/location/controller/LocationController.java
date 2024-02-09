@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/locations")
-public class LocationController {
+public class  LocationController {
 
     private final PlaceService placeService;
 

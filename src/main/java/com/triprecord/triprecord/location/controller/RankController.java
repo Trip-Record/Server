@@ -22,4 +22,9 @@ public class RankController {
     public ResponseEntity<List<PlaceRankGetResponse>> monthRank(@RequestParam("year") String year, @RequestParam("month") String month){
         return ResponseEntity.status(HttpStatus.OK).body(placeService.getMonthlyRank(String.format("%s-%s", year, month)));
     }
+
+    @GetMapping("/seasons")
+    public ResponseEntity<List<PlaceRankGetResponse>> seasonRank(@RequestParam("year") String year, @RequestParam("season") String season){
+        return ResponseEntity.status(HttpStatus.OK).body(placeService.getSeasonRank(year, season));
+    }
 }

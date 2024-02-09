@@ -4,6 +4,7 @@ import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.PlaceService;
 import com.triprecord.triprecord.location.entity.Place;
+import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,18 +77,20 @@ public class ScheduleService {
                         scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
     }
 
-    public SchedulePageGetResponse getSchedules(Pageable pageable) {
+    public SchedulePageGetResponse getSchedules(Optional<Long> userId, Pageable pageable) {
         Page<Schedule> schedules = scheduleRepository.findAllOrderById(pageable);
         List<ScheduleGetResponse> scheduleGetResponses = new ArrayList<>();
 
         for (Schedule schedule : schedules.getContent()) {
             long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
             long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+            Boolean userScheduleLiked = findUserScheduleLiked(userId, schedule);
             scheduleGetResponses.add(ScheduleGetResponse.of(
                     schedule.getCreatedUser(),
                     schedule,
                     schedule.getSchedulePlaces(),
                     schedule.getScheduleDetails(),
+                    userScheduleLiked,
                     scheduleLikeCount,
                     scheduleCommentCount
             ));
@@ -99,7 +103,7 @@ public class ScheduleService {
                 .build();
     }
 
-    public ScheduleGetResponse getSchedule(Long scheduleId) {
+    public ScheduleGetResponse getSchedule(Optional<Long> userId, Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
         User createdUser = schedule.getCreatedUser();
         List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
@@ -107,6 +111,7 @@ public class ScheduleService {
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
         Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
+        Boolean userScheduleLiked = findUserScheduleLiked(userId, schedule);
         Long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
         Long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
 
@@ -115,9 +120,15 @@ public class ScheduleService {
                 schedule,
                 schedulePlaces,
                 scheduleDetails,
+                userScheduleLiked,
                 scheduleLikeCount,
                 scheduleCommentCount
         );
+    }
+
+    private Boolean findUserScheduleLiked(Optional<Long> userId, Schedule schedule) {
+        if(userId.isPresent()) return scheduleLikeService.findUserLikedSchedule(schedule, userService.getUserOrException(userId.get()));
+        return false;
     }
 
     @Transactional
@@ -150,10 +161,18 @@ public class ScheduleService {
         scheduleLikeService.deleteScheduleLike(user, schedule);
     }
 
+    @Transactional
     public void createScheduleLike(Long userId, Long scheduleId) {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
         scheduleLikeService.createScheduleLike(user, schedule);
+    }
+
+    @Transactional
+    public void createScheduleComment(Long userId, Long scheduleId, ScheduleCommentContentRequest request) {
+        User user = userService.getUserOrException(userId);
+        Schedule schedule = getScheduleOrException(scheduleId);
+        scheduleCommentService.createScheduleComment(user, schedule, request.content());
     }
 
     private void updateSchedulePlace(Schedule schedule, ScheduleUpdateRequest ScheduleRequest) {
