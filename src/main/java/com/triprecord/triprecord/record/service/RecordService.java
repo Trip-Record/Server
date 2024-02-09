@@ -10,6 +10,7 @@ import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordUpdateData;
 import com.triprecord.triprecord.record.entity.Record;
+import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.repository.RecordRepository;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.user.service.UserService;
@@ -112,6 +113,15 @@ public class RecordService {
 
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
+    }
+
+    @Transactional
+    public void modifyRecordComment(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        RecordComment comment = recordCommentService.getRecordCommentOrException(recordId);
+        checkSameUser(comment.getCommentedUser(), user);
+
+        recordCommentService.updateRecordComment(comment, content);
     }
 
     public void postLikeToRecord(Long userId, Long recordId) {
