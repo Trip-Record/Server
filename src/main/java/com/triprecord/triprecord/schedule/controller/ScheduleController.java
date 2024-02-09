@@ -7,6 +7,7 @@ import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -50,16 +51,18 @@ public class ScheduleController {
     }
 
     @GetMapping
-    public ResponseEntity<SchedulePageGetResponse> getSchedules(@PageableDefault(size = 5) Pageable pageable) {
-        SchedulePageGetResponse response = scheduleService.getSchedules(pageable);
+    public ResponseEntity<SchedulePageGetResponse> getSchedules(Authentication authentication, @PageableDefault(size = 5) Pageable pageable) {
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        SchedulePageGetResponse response = scheduleService.getSchedules(userId, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
     }
 
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<ScheduleGetResponse> getSchedule(@PathVariable Long scheduleId) {
-        ScheduleGetResponse response = scheduleService.getSchedule(scheduleId);
+    public ResponseEntity<ScheduleGetResponse> getSchedule(Authentication authentication, @PathVariable Long scheduleId) {
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        ScheduleGetResponse response = scheduleService.getSchedule(userId, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
