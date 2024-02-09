@@ -132,6 +132,15 @@ public class RecordService {
         recordCommentService.deleteRecordComment(comment);
     }
 
+    @Transactional
+    public void modifyRecordComment(Long userId, Long recordId, String content) {
+        User user = userService.getUserOrException(userId);
+        RecordComment comment = recordCommentService.getRecordCommentOrException(recordId);
+        checkSameUser(comment.getCommentedUser(), user);
+
+        recordCommentService.updateRecordComment(comment, content);
+    }
+
     public void postLikeToRecord(Long userId, Long recordId) {
         User user  = userService.getUserOrException(userId);
         Record record = getRecordOrException(recordId);
