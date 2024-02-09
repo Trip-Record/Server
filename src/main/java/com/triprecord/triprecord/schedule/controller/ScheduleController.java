@@ -109,4 +109,14 @@ public class ScheduleController {
                 .body(new ResponseMessage("댓글 수정에 성공했습니다."));
     }
 
+    @DeleteMapping("comments/{scheduleCommentId}")
+    public ResponseEntity<ResponseMessage> deleteScheduleComment(Authentication authentication,
+                                                                 @PathVariable Long scheduleCommentId) {
+        Long userId = Long.valueOf(authentication.getName());
+        scheduleCommentService.deleteScheduleComment(userId, scheduleCommentId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ResponseMessage("댓글 삭제에 성공했습니다."));
+    }
+
 }

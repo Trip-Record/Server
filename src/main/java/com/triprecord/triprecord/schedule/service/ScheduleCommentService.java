@@ -25,6 +25,16 @@ public class ScheduleCommentService {
     }
 
     @Transactional
+    public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
+        User user = userService.getUserOrException(userId);
+        ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
+        if (scheduleComment.getCommentedUser() != user) {
+            throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
+        }
+        scheduleCommentRepository.delete(scheduleComment);
+    }
+
+    @Transactional
     public void updateScheduleComment(Long userId, Long scheduleCommentId, ScheduleCommentContentRequest request) {
         User user = userService.getUserOrException(userId);
         ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
