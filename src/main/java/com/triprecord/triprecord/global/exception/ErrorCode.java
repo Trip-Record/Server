@@ -33,7 +33,9 @@ public enum ErrorCode {
     SCHEDULE_DETAIL_DATE_INVALID(HttpStatus.BAD_REQUEST, "일정 상세 날짜가 일정 기간을 벗어났습니다."),
     SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 일정이 없습니다."),
     SCHEDULE_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 일정에 좋아요를 남기지 않았습니다."),
-    SCHEDULE_ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 남긴 일정입니다.");
+    SCHEDULE_ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 남긴 일정입니다."),
+    SCHEDULE_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 일정 댓글이 없습니다."),
+    SCHEDULE_COMMENT_DUPLICATE(HttpStatus.CONFLICT, "기존 일정 댓글과 동일합니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
