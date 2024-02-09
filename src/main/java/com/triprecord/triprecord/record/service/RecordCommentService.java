@@ -25,4 +25,8 @@ public class RecordCommentService {
         return recordCommentRepository.findById(recordId).orElseThrow(
                 ()->new TripRecordException(ErrorCode.RECORD_COMMENT_NOT_FOUND));
     }
+
+    public void deleteRecordComment(RecordComment comment) {
+        recordCommentRepository.delete(comment);
+    }
 }

@@ -59,6 +59,13 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
     }
 
+
+    @DeleteMapping("/comments/{recordCommentId}")
+    public ResponseEntity<ResponseMessage> deleteRecordComment(Authentication authentication, @PathVariable Long recordCommentId) {
+        recordService.deleteCommentFromRecord(Long.valueOf(authentication.getName()), recordCommentId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 댓글 삭제에 성공했습니다."));
+    }
+
     @PostMapping("/{recordId}/likes")
     public ResponseEntity<ResponseMessage> postLike(Authentication authentication, @PathVariable Long recordId){
         recordService.postLikeToRecord(Long.valueOf(authentication.getName()), recordId);
