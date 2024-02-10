@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -66,7 +67,8 @@ public class RecordController {
     }
 
     @GetMapping("/{recordId}/comments")
-    public ResponseEntity<RecordCommentPage> getCommentPage(Pageable pageable, @PathVariable Long recordId) {
+    public ResponseEntity<RecordCommentPage> getCommentPage(@PageableDefault(size = 5) Pageable pageable,
+                                                            @PathVariable Long recordId) {
         return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordComments(recordId, pageable));
     }
   
