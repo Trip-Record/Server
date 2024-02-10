@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/records/{recordId}",
             "/schedules",
             "/schedules/{scheduleId}",
+            "/schedules/{scheduleId}/comments",
             "/trip-styles",
             "/locations"
     };
