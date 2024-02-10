@@ -1,9 +1,8 @@
 package com.triprecord.triprecord.user.entity;
 
+import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.entity.RecordLike;
-import com.triprecord.triprecord.record.entity.Record;
-import com.triprecord.triprecord.user.entity.TripStyle;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,14 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -41,6 +40,7 @@ public class User {
 
     private String userProfileImg;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trip_style_id")
     private TripStyle userTripStyle;
@@ -64,4 +64,5 @@ public class User {
         this.userProfileImg = userProfileImg;
         this.userTripStyle = tripStyle;
     }
+
 }

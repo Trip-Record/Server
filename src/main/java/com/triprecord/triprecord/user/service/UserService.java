@@ -13,14 +13,14 @@ import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +36,7 @@ public class UserService {
     private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TripStyleService tripStyleService;
 
     @Transactional
     public String signup(UserCreateRequest userCreateRequest) {
@@ -49,7 +50,8 @@ public class UserService {
                 .userEmail(userCreateRequest.userEmail())
                 .userPassword(passwordEncoder.encode(userCreateRequest.userPassword()))
                 .userAge(userCreateRequest.userAge())
-                .userProfileImg(basicProfileRepository.findById(userCreateRequest.userBasicProfileId()).get().getBasicProfileImg())
+                .userProfileImg(basicProfileRepository.findById(userCreateRequest.userBasicProfileId()).get()
+                        .getBasicProfileImg())
                 .userNickname(userCreateRequest.userNickname())
                 .build();
 
@@ -61,14 +63,15 @@ public class UserService {
     public String login(UserLoginRequest userLoginRequest) {
         User user = userRepository.findByUserEmail(userLoginRequest.userEmail())
                 .orElseThrow(() -> new TripRecordException(ErrorCode.USER_NOT_FOUND));
-        if (!passwordEncoder.matches(userLoginRequest.userPassword(), user.getUserPassword()))
+        if (!passwordEncoder.matches(userLoginRequest.userPassword(), user.getUserPassword())) {
             throw new TripRecordException(ErrorCode.INVALID_PASSWORD);
+        }
         UserAuthentication userAuthentication = new UserAuthentication(user.getUserId(), null, null);
 
         return jwtProvider.generateToken(userAuthentication);
     }
 
-    public UserInfoGetResponse getUserInfo(Long userId){
+    public UserInfoGetResponse getUserInfo(Long userId) {
         User user = getUserOrException(userId);
         Long recordTotal = getRecordsCount(user);
         Long scheduleTotal = getSchedulesCount(user);
@@ -78,19 +81,30 @@ public class UserService {
         return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public Long getLikesCount(User user){
-        return recordLikeRepository.countRecordLikeByLikedUser(user) + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
+    @Transactional
+    public void setUserTripStyle(Long userId, Long tripStyleId) {
+        User user = getUserOrException(userId);
+        if (user.getUserTripStyle() != null) {
+            throw new TripRecordException(ErrorCode.USER_TRIP_STYLE_DUPLICATE);
+        }
+        TripStyle tripStyle = tripStyleService.getTripStyle(tripStyleId);
+        user.setUserTripStyle(tripStyle);
     }
 
-    public Long getPlacesCount (User user){
+    private Long getLikesCount(User user) {
+        return recordLikeRepository.countRecordLikeByLikedUser(user)
+                + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
+    }
+
+    private Long getPlacesCount(User user) {
         return recordPlaceRepository.placeCount(user);
     }
 
-    public Long getRecordsCount (User user){
+    private Long getRecordsCount(User user) {
         return recordRepository.countRecordByCreatedUser(user);
     }
 
-    public Long getSchedulesCount(User user){
+    private Long getSchedulesCount(User user) {
         return scheduleRepository.countScheduleByCreatedUser(user);
     }
 
