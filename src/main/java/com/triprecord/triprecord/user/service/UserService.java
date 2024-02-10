@@ -6,8 +6,6 @@ import com.triprecord.triprecord.global.config.jwt.UserAuthentication;
 import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.dto.PlaceBasicData;
-import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
-import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
 import com.triprecord.triprecord.record.dto.RecordInfo;
 import com.triprecord.triprecord.record.entity.Record;
@@ -18,12 +16,17 @@ import com.triprecord.triprecord.record.service.RecordCommentService;
 import com.triprecord.triprecord.record.service.RecordImageService;
 import com.triprecord.triprecord.record.service.RecordLikeService;
 import com.triprecord.triprecord.record.service.RecordPlaceService;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleInfo;
+import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
+import com.triprecord.triprecord.schedule.service.ScheduleLikeService;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.response.UserRecordPageResponse;
+import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ public class UserService {
     private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ScheduleLikeService scheduleLikeService;
+    private final ScheduleCommentService scheduleCommentService;
     private final RecordLikeService recordLikeService;
     private final RecordCommentService recordCommentService;
     private final RecordPlaceService recordPlaceService;
@@ -116,6 +121,29 @@ public class UserService {
                 .totalPages(records.getTotalPages())
                 .pageNumber(records.getNumber())
                 .recordInfoList(userRecordGetResponse)
+                .build();
+    }
+
+    public UserSchedulePageResponse getUserSchedules(Long userId, Pageable pageable){
+        Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(userId, pageable);
+        List<ScheduleInfo> userScheduleGetResponse = new ArrayList<>();
+
+        for(Schedule schedule : schedules.getContent()){
+            long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+            long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+            userScheduleGetResponse.add(ScheduleInfo.of(
+                    schedule,
+                    schedule.getSchedulePlaces(),
+                    schedule.getScheduleDetails(),
+                    scheduleLikeCount,
+                    scheduleCommentCount
+            ));
+        }
+
+        return UserSchedulePageResponse.builder()
+                .totalPages(schedules.getTotalPages())
+                .pageNumber(schedules.getNumber())
+                .scheduleInfoList(userScheduleGetResponse)
                 .build();
     }
 

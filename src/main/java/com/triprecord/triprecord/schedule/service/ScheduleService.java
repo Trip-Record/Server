@@ -7,6 +7,7 @@ import com.triprecord.triprecord.location.entity.Place;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCommentContentRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleCreateRequest;
 import com.triprecord.triprecord.schedule.dto.request.ScheduleUpdateRequest;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleCommentPageGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.entity.Schedule;
@@ -127,7 +128,9 @@ public class ScheduleService {
     }
 
     private Boolean findUserScheduleLiked(Optional<Long> userId, Schedule schedule) {
-        if(userId.isPresent()) return scheduleLikeService.findUserLikedSchedule(schedule, userService.getUserOrException(userId.get()));
+        if (userId.isPresent()) {
+            return scheduleLikeService.findUserLikedSchedule(schedule, userService.getUserOrException(userId.get()));
+        }
         return false;
     }
 
@@ -166,6 +169,11 @@ public class ScheduleService {
         User user = userService.getUserOrException(userId);
         Schedule schedule = getScheduleOrException(scheduleId);
         scheduleLikeService.createScheduleLike(user, schedule);
+    }
+
+    public ScheduleCommentPageGetResponse getScheduleComments(Long scheduleId, Pageable pageable) {
+        Schedule schedule = getScheduleOrException(scheduleId);
+        return scheduleCommentService.getScheduleComments(schedule, pageable);
     }
 
     @Transactional
