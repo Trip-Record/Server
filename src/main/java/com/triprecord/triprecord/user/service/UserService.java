@@ -27,18 +27,18 @@ import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.response.UserRecordPageResponse;
 import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
+import com.triprecord.triprecord.user.entity.TripStyle;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +54,7 @@ public class UserService {
     private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TripStyleService tripStyleService;
     private final ScheduleLikeService scheduleLikeService;
     private final ScheduleCommentService scheduleCommentService;
     private final RecordLikeService recordLikeService;
@@ -73,7 +74,8 @@ public class UserService {
                 .userEmail(userCreateRequest.userEmail())
                 .userPassword(passwordEncoder.encode(userCreateRequest.userPassword()))
                 .userAge(userCreateRequest.userAge())
-                .userProfileImg(basicProfileRepository.findById(userCreateRequest.userBasicProfileId()).get().getBasicProfileImg())
+                .userProfileImg(basicProfileRepository.findById(userCreateRequest.userBasicProfileId()).get()
+                        .getBasicProfileImg())
                 .userNickname(userCreateRequest.userNickname())
                 .build();
 
@@ -85,14 +87,15 @@ public class UserService {
     public String login(UserLoginRequest userLoginRequest) {
         User user = userRepository.findByUserEmail(userLoginRequest.userEmail())
                 .orElseThrow(() -> new TripRecordException(ErrorCode.USER_NOT_FOUND));
-        if (!passwordEncoder.matches(userLoginRequest.userPassword(), user.getUserPassword()))
+        if (!passwordEncoder.matches(userLoginRequest.userPassword(), user.getUserPassword())) {
             throw new TripRecordException(ErrorCode.INVALID_PASSWORD);
+        }
         UserAuthentication userAuthentication = new UserAuthentication(user.getUserId(), null, null);
 
         return jwtProvider.generateToken(userAuthentication);
     }
 
-    public UserInfoGetResponse getUserInfo(Long userId){
+    public UserInfoGetResponse getUserInfo(Long userId) {
         User user = getUserOrException(userId);
         Long recordTotal = getRecordsCount(user);
         Long scheduleTotal = getSchedulesCount(user);
@@ -102,11 +105,21 @@ public class UserService {
         return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
     }
 
-    public UserRecordPageResponse getUserRecords(Long userId, Pageable pageable){
+    @Transactional
+    public void setUserTripStyle(Long userId, Long tripStyleId) {
+        User user = getUserOrException(userId);
+        if (user.getUserTripStyle() != null) {
+            throw new TripRecordException(ErrorCode.USER_TRIP_STYLE_DUPLICATE);
+        }
+        TripStyle tripStyle = tripStyleService.getTripStyle(tripStyleId);
+        user.setUserTripStyle(tripStyle);
+    }
+
+    public UserRecordPageResponse getUserRecords(Long userId, Pageable pageable) {
         Page<Record> records = recordRepository.findAllByCreatedUser(userId, pageable);
         List<RecordInfo> userRecordGetResponse = new ArrayList<>();
 
-        for(Record record : records.getContent()){
+        for (Record record : records.getContent()) {
             List<PlaceBasicData> userRecordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
             List<RecordImageData> userRecordImageData = recordImageService.findRecordImageData(record);
 
@@ -114,7 +127,8 @@ public class UserService {
             Long recordCommentCount = recordCommentService.getRecordCommentCount(record);
 
             userRecordGetResponse.add(
-                    RecordInfo.of(record, userRecordPlaceData, userRecordImageData, recordLikeCount, recordCommentCount));
+                    RecordInfo.of(record, userRecordPlaceData, userRecordImageData, recordLikeCount,
+                            recordCommentCount));
         }
 
         return UserRecordPageResponse.builder()
@@ -124,11 +138,11 @@ public class UserService {
                 .build();
     }
 
-    public UserSchedulePageResponse getUserSchedules(Long userId, Pageable pageable){
+    public UserSchedulePageResponse getUserSchedules(Long userId, Pageable pageable) {
         Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(userId, pageable);
         List<ScheduleInfo> userScheduleGetResponse = new ArrayList<>();
 
-        for(Schedule schedule : schedules.getContent()){
+        for (Schedule schedule : schedules.getContent()) {
             long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
             long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
             userScheduleGetResponse.add(ScheduleInfo.of(
@@ -147,19 +161,20 @@ public class UserService {
                 .build();
     }
 
-    public Long getLikesCount(User user){
-        return recordLikeRepository.countRecordLikeByLikedUser(user) + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
+    private Long getLikesCount(User user) {
+        return recordLikeRepository.countRecordLikeByLikedUser(user)
+                + scheduleLikeRepository.countScheduleLikeByLikedUser(user);
     }
 
-    public Long getPlacesCount (User user){
+    private Long getPlacesCount(User user) {
         return recordPlaceRepository.placeCount(user);
     }
 
-    public Long getRecordsCount (User user){
+    private Long getRecordsCount(User user) {
         return recordRepository.countRecordByCreatedUser(user);
     }
 
-    public Long getSchedulesCount(User user){
+    private Long getSchedulesCount(User user) {
         return scheduleRepository.countScheduleByCreatedUser(user);
     }
 

@@ -13,6 +13,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     FILE_READ_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 읽기에 실패했습니다."),
+    USER_TRIP_STYLE_DUPLICATE(HttpStatus.CONFLICT, "이미 등록된 여행 스타일이 존재합니다."),
+    TRIP_STYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 여행 스타일이 없습니다."),
 
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "일치하는 기록 이미지가 없습니다."),
 
