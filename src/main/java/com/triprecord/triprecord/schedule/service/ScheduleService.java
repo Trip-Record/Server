@@ -15,7 +15,6 @@ import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.entity.User;
-import com.triprecord.triprecord.user.service.UserService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +33,6 @@ public class ScheduleService {
 
     private final ScheduleLikeService scheduleLikeService;
     private final ScheduleCommentService scheduleCommentService;
-    private final UserService userService;
     private final PlaceService placeService;
     private final SchedulePlaceService schedulePlaceService;
     private final ScheduleDetailService scheduleDetailService;
@@ -46,9 +44,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void createSchedule(Long userId, ScheduleCreateRequest request) {
-        User user = userService.getUserOrException(userId);
-
+    public void createSchedule(User user, ScheduleCreateRequest request) {
         List<Place> places = new ArrayList<>();
         for (Long placeId : request.placeIds()) {
             places.add(placeService.getPlaceOrException(placeId));
@@ -78,14 +74,14 @@ public class ScheduleService {
                         scheduleDetail.scheduleDetailDate(), scheduleDetail.scheduleDetailContent()));
     }
 
-    public SchedulePageGetResponse getSchedules(Optional<Long> userId, Pageable pageable) {
+    public SchedulePageGetResponse getSchedules(Optional<User> user, Pageable pageable) {
         Page<Schedule> schedules = scheduleRepository.findAllOrderById(pageable);
         List<ScheduleGetResponse> scheduleGetResponses = new ArrayList<>();
 
         for (Schedule schedule : schedules.getContent()) {
             long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
             long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
-            Boolean userScheduleLiked = findUserScheduleLiked(userId, schedule);
+            Boolean userScheduleLiked = findUserScheduleLiked(user, schedule);
             scheduleGetResponses.add(ScheduleGetResponse.of(
                     schedule.getCreatedUser(),
                     schedule,
@@ -104,7 +100,7 @@ public class ScheduleService {
                 .build();
     }
 
-    public ScheduleGetResponse getSchedule(Optional<Long> userId, Long scheduleId) {
+    public ScheduleGetResponse getSchedule(Optional<User> user, Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
         User createdUser = schedule.getCreatedUser();
         List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
@@ -112,7 +108,7 @@ public class ScheduleService {
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
         Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
-        Boolean userScheduleLiked = findUserScheduleLiked(userId, schedule);
+        Boolean userScheduleLiked = findUserScheduleLiked(user, schedule);
         Long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
         Long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
 
@@ -127,16 +123,15 @@ public class ScheduleService {
         );
     }
 
-    private Boolean findUserScheduleLiked(Optional<Long> userId, Schedule schedule) {
-        if (userId.isPresent()) {
-            return scheduleLikeService.findUserLikedSchedule(schedule, userService.getUserOrException(userId.get()));
+    private Boolean findUserScheduleLiked(Optional<User> user, Schedule schedule) {
+        if (user.isPresent()) {
+            return scheduleLikeService.findUserLikedSchedule(schedule, user.get());
         }
         return false;
     }
 
     @Transactional
-    public void updateSchedule(Long userId, Long scheduleId, ScheduleUpdateRequest ScheduleRequest) {
-        User user = userService.getUserOrException(userId);
+    public void updateSchedule(User user, Long scheduleId, ScheduleUpdateRequest ScheduleRequest) {
         Schedule schedule = getScheduleOrException(scheduleId);
         checkSameUser(schedule.getCreatedUser(), user);
 
@@ -148,8 +143,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void deleteSchedule(Long userId, Long scheduleId) {
-        User user = userService.getUserOrException(userId);
+    public void deleteSchedule(User user, Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
         checkSameUser(schedule.getCreatedUser(), user);
 
@@ -157,16 +151,14 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void deleteScheduleLike(Long userId, Long scheduleId) {
-        User user = userService.getUserOrException(userId);
+    public void deleteScheduleLike(User user, Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
 
         scheduleLikeService.deleteScheduleLike(user, schedule);
     }
 
     @Transactional
-    public void createScheduleLike(Long userId, Long scheduleId) {
-        User user = userService.getUserOrException(userId);
+    public void createScheduleLike(User user, Long scheduleId) {
         Schedule schedule = getScheduleOrException(scheduleId);
         scheduleLikeService.createScheduleLike(user, schedule);
     }
@@ -177,8 +169,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void createScheduleComment(Long userId, Long scheduleId, ScheduleCommentContentRequest request) {
-        User user = userService.getUserOrException(userId);
+    public void createScheduleComment(User user, Long scheduleId, ScheduleCommentContentRequest request) {
         Schedule schedule = getScheduleOrException(scheduleId);
         scheduleCommentService.createScheduleComment(user, schedule, request.content());
     }

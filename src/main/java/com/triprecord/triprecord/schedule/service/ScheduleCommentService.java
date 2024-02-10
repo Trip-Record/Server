@@ -9,7 +9,6 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.schedule.repository.ScheduleCommentRepository;
 import com.triprecord.triprecord.user.entity.User;
-import com.triprecord.triprecord.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleCommentService {
 
     private final ScheduleCommentRepository scheduleCommentRepository;
-    private final UserService userService;
 
     public Long getScheduleCommentCount(Schedule schedule) {
         return scheduleCommentRepository.countByCommentedSchedule(schedule);
@@ -54,8 +52,7 @@ public class ScheduleCommentService {
     }
 
     @Transactional
-    public void updateScheduleComment(Long userId, Long scheduleCommentId, ScheduleCommentContentRequest request) {
-        User user = userService.getUserOrException(userId);
+    public void updateScheduleComment(User user, Long scheduleCommentId, ScheduleCommentContentRequest request) {
         ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
         if (scheduleComment.getCommentedUser() != user) {
             throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
@@ -68,8 +65,7 @@ public class ScheduleCommentService {
     }
 
     @Transactional
-    public void deleteScheduleComment(Long userId, Long scheduleCommentId) {
-        User user = userService.getUserOrException(userId);
+    public void deleteScheduleComment(User user, Long scheduleCommentId) {
         ScheduleComment scheduleComment = getScheduleCommentOrException(scheduleCommentId);
         if (scheduleComment.getCommentedUser() != user) {
             throw new TripRecordException(ErrorCode.INVALID_PERMISSION);
