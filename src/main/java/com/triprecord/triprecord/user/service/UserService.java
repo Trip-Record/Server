@@ -8,19 +8,30 @@ import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.record.repository.RecordLikeRepository;
 import com.triprecord.triprecord.record.repository.RecordPlaceRepository;
 import com.triprecord.triprecord.record.repository.RecordRepository;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
+import com.triprecord.triprecord.schedule.dto.response.ScheduleInfo;
+import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
+import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.repository.ScheduleLikeRepository;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
+import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
+import com.triprecord.triprecord.schedule.service.ScheduleLikeService;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
+import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.entity.User;
 import com.triprecord.triprecord.user.repository.UserRepository;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +47,8 @@ public class UserService {
     private final ScheduleLikeRepository scheduleLikeRepository;
     private final BasicProfileRepository basicProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ScheduleLikeService scheduleLikeService;
+    private final ScheduleCommentService scheduleCommentService;
 
     @Transactional
     public String signup(UserCreateRequest userCreateRequest) {
@@ -76,6 +89,29 @@ public class UserService {
         Long likeTotal = getLikesCount(user);
 
         return UserInfoGetResponse.of(user, recordTotal, scheduleTotal, placeTotal, likeTotal);
+    }
+
+    public UserSchedulePageResponse getUserSchedules(Long userId, Pageable pageable){
+        Page<Schedule> schedules = scheduleRepository.findAllByCreatedUser(userId, pageable);
+        List<ScheduleInfo> userScheduleGetResponse = new ArrayList<>();
+
+        for(Schedule schedule : schedules.getContent()){
+            long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
+            long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
+            userScheduleGetResponse.add(ScheduleInfo.of(
+                    schedule,
+                    schedule.getSchedulePlaces(),
+                    schedule.getScheduleDetails(),
+                    scheduleLikeCount,
+                    scheduleCommentCount
+            ));
+        }
+
+        return UserSchedulePageResponse.builder()
+                .totalPages(schedules.getTotalPages())
+                .pageNumber(schedules.getNumber())
+                .scheduleInfoList(userScheduleGetResponse)
+                .build();
     }
 
     public Long getLikesCount(User user){

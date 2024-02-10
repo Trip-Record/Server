@@ -1,12 +1,16 @@
 package com.triprecord.triprecord.user.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
+import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -46,5 +50,12 @@ public class UserController {
     @GetMapping("/informations")
     public ResponseEntity<UserInfoGetResponse> userInfo(Authentication authentication){
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(Long.valueOf(authentication.getName())));
+    }
+
+    @GetMapping("/schedules")
+    public ResponseEntity<UserSchedulePageResponse> userSchedules(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
+        UserSchedulePageResponse response = userService.getUserSchedules(Long.valueOf(authentication.getName()), pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
     }
 }
