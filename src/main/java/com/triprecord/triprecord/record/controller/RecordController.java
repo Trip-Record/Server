@@ -5,6 +5,7 @@ import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCommentContent;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordCommentPage;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
@@ -62,6 +63,11 @@ public class RecordController {
                                                         @Valid RecordModifyRequest request) {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
+    }
+
+    @GetMapping("/{recordId}/comments")
+    public ResponseEntity<RecordCommentPage> getCommentPage(Pageable pageable, @PathVariable Long recordId) {
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordComments(recordId, pageable));
     }
   
     @PostMapping("/{recordId}/comments")

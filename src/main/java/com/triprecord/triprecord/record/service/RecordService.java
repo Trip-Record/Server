@@ -5,6 +5,7 @@ import com.triprecord.triprecord.global.exception.ErrorCode;
 import com.triprecord.triprecord.global.exception.TripRecordException;
 import com.triprecord.triprecord.location.dto.PlaceBasicData;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordCommentPage;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.dto.RecordImageData;
@@ -113,6 +114,13 @@ public class RecordService {
 
         modifyPlace(record, request.deletePlaceIds(), request.addPlaceIds());
         modifyImage(record, request.deleteImages(), request.addImages());
+    }
+
+    @Transactional(readOnly = true)
+    public RecordCommentPage getRecordComments(Long recordId, Pageable pageable) {
+        Record record = getRecordOrException(recordId);
+
+        return recordCommentService.getRecordComments(record, pageable);
     }
   
     @Transactional
