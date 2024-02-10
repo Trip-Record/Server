@@ -130,15 +130,6 @@ public class RecordService {
         recordCommentService.createRecordComment(user, record, content);
     }
 
-    @Transactional
-    public void deleteCommentFromRecord(Long userId, Long recordCommentId) {
-        User user = userService.getUserOrException(userId);
-
-        RecordComment comment = recordCommentService.getRecordCommentOrException(recordCommentId);
-        checkSameUser(comment.getCommentedUser(), user);
-
-        recordCommentService.deleteRecordComment(comment);
-    }
 
     @Transactional
     public void modifyRecordComment(Long userId, Long recordId, String content) {
@@ -147,6 +138,16 @@ public class RecordService {
         checkSameUser(comment.getCommentedUser(), user);
 
         recordCommentService.updateRecordComment(comment, content);
+    }
+
+    @Transactional
+    public void deleteCommentFromRecord(Long userId, Long recordCommentId) {
+        User user = userService.getUserOrException(userId);
+
+        RecordComment comment = recordCommentService.getRecordCommentOrException(recordCommentId);
+        checkSameUser(comment.getCommentedUser(), user);
+
+        recordCommentService.deleteRecordComment(comment);
     }
 
     public void postLikeToRecord(Long userId, Long recordId) {
