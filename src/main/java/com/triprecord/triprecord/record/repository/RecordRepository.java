@@ -20,4 +20,8 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     @Query("SELECT r FROM Record r ORDER BY r.recordId DESC ")
     Page<Record> findAllOrderById(Pageable pageable);
+
+    @Query("SELECT r FROM Record r WHERE r.createdUser.userId = :uid ORDER BY r.recordId DESC ")
+    Page<Record> findAllByCreatedUser(@Param("uid") Long userId, Pageable pageable);
+
 }

@@ -1,10 +1,10 @@
 package com.triprecord.triprecord.user.controller;
 
 import com.triprecord.triprecord.global.util.ResponseMessage;
-import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserCreateRequest;
 import com.triprecord.triprecord.user.dto.response.UserInfoGetResponse;
 import com.triprecord.triprecord.user.dto.request.UserLoginRequest;
+import com.triprecord.triprecord.user.dto.response.UserRecordPageResponse;
 import com.triprecord.triprecord.user.dto.response.UserSchedulePageResponse;
 import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
@@ -50,6 +50,11 @@ public class UserController {
     @GetMapping("/informations")
     public ResponseEntity<UserInfoGetResponse> userInfo(Authentication authentication){
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserInfo(Long.valueOf(authentication.getName())));
+    }
+    @GetMapping("/records")
+    public ResponseEntity<UserRecordPageResponse> getUserRecords(Authentication authentication, @PageableDefault(size = 5) Pageable pageable){
+        UserRecordPageResponse response = userService.getUserRecords(Long.valueOf(authentication.getName()), pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping("/schedules")
