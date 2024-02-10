@@ -9,6 +9,8 @@ import com.triprecord.triprecord.schedule.dto.response.ScheduleGetResponse;
 import com.triprecord.triprecord.schedule.dto.response.SchedulePageGetResponse;
 import com.triprecord.triprecord.schedule.service.ScheduleCommentService;
 import com.triprecord.triprecord.schedule.service.ScheduleService;
+import com.triprecord.triprecord.user.entity.User;
+import com.triprecord.triprecord.user.service.UserService;
 import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +35,13 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
     private final ScheduleCommentService scheduleCommentService;
+    private final UserService userService;
 
     @PostMapping
     public ResponseEntity<ResponseMessage> createSchedule(Authentication authentication,
                                                           @RequestBody @Valid ScheduleCreateRequest request) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.createSchedule(userId, request);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.createSchedule(user, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseMessage("일정 생성에 성공했습니다."));
@@ -47,8 +50,8 @@ public class ScheduleController {
     @PatchMapping("/{scheduleId}")
     public ResponseEntity<ResponseMessage> updateSchedule(Authentication authentication, @PathVariable Long scheduleId,
                                                           @RequestBody ScheduleUpdateRequest request) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.updateSchedule(userId, scheduleId, request);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.updateSchedule(user, scheduleId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("일정 수정에 성공했습니다."));
@@ -57,9 +60,10 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<SchedulePageGetResponse> getSchedules(Authentication authentication,
                                                                 @PageableDefault(size = 5) Pageable pageable) {
-        Optional<Long> userId = Optional.ofNullable(
-                (authentication == null) ? null : Long.parseLong(authentication.getName()));
-        SchedulePageGetResponse response = scheduleService.getSchedules(userId, pageable);
+        Optional<User> user = Optional.ofNullable(
+                (authentication == null) ? null
+                        : userService.getUserOrException(Long.parseLong(authentication.getName())));
+        SchedulePageGetResponse response = scheduleService.getSchedules(user, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -68,9 +72,10 @@ public class ScheduleController {
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleGetResponse> getSchedule(Authentication authentication,
                                                            @PathVariable Long scheduleId) {
-        Optional<Long> userId = Optional.ofNullable(
-                (authentication == null) ? null : Long.parseLong(authentication.getName()));
-        ScheduleGetResponse response = scheduleService.getSchedule(userId, scheduleId);
+        Optional<User> user = Optional.ofNullable(
+                (authentication == null) ? null
+                        : userService.getUserOrException(Long.parseLong(authentication.getName())));
+        ScheduleGetResponse response = scheduleService.getSchedule(user, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -79,8 +84,8 @@ public class ScheduleController {
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<ResponseMessage> deleteSchedule(Authentication authentication,
                                                           @PathVariable Long scheduleId) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.deleteSchedule(userId, scheduleId);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.deleteSchedule(user, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("일정 삭제에 성공했습니다."));
@@ -89,8 +94,8 @@ public class ScheduleController {
     @DeleteMapping("{scheduleId}/likes")
     public ResponseEntity<ResponseMessage> deleteScheduleLike(Authentication authentication,
                                                               @PathVariable Long scheduleId) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.deleteScheduleLike(userId, scheduleId);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.deleteScheduleLike(user, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("일정 좋아요 취소에 성공했습니다."));
@@ -99,8 +104,8 @@ public class ScheduleController {
     @PostMapping("{scheduleId}/likes")
     public ResponseEntity<ResponseMessage> createScheduleLike(Authentication authentication,
                                                               @PathVariable Long scheduleId) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.createScheduleLike(userId, scheduleId);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.createScheduleLike(user, scheduleId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("좋아요 등록에 성공했습니다."));
@@ -119,8 +124,8 @@ public class ScheduleController {
     public ResponseEntity<ResponseMessage> createScheduleComment(Authentication authentication,
                                                                  @PathVariable Long scheduleId,
                                                                  @RequestBody @Valid ScheduleCommentContentRequest request) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleService.createScheduleComment(userId, scheduleId, request);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleService.createScheduleComment(user, scheduleId, request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseMessage("댓글 등록에 성공했습니다."));
@@ -130,8 +135,8 @@ public class ScheduleController {
     public ResponseEntity<ResponseMessage> updateScheduleComment(Authentication authentication,
                                                                  @PathVariable Long scheduleCommentId,
                                                                  @RequestBody @Valid ScheduleCommentContentRequest request) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleCommentService.updateScheduleComment(userId, scheduleCommentId, request);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleCommentService.updateScheduleComment(user, scheduleCommentId, request);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("댓글 수정에 성공했습니다."));
@@ -140,8 +145,8 @@ public class ScheduleController {
     @DeleteMapping("comments/{scheduleCommentId}")
     public ResponseEntity<ResponseMessage> deleteScheduleComment(Authentication authentication,
                                                                  @PathVariable Long scheduleCommentId) {
-        Long userId = Long.valueOf(authentication.getName());
-        scheduleCommentService.deleteScheduleComment(userId, scheduleCommentId);
+        User user = userService.getUserOrException(Long.valueOf(authentication.getName()));
+        scheduleCommentService.deleteScheduleComment(user, scheduleCommentId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseMessage("댓글 삭제에 성공했습니다."));
