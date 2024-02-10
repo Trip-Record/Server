@@ -5,6 +5,7 @@ import com.triprecord.triprecord.global.util.ResponseMessage;
 import com.triprecord.triprecord.record.controller.request.RecordCommentContent;
 import com.triprecord.triprecord.record.controller.request.RecordCreateRequest;
 import com.triprecord.triprecord.record.controller.request.RecordModifyRequest;
+import com.triprecord.triprecord.record.controller.response.RecordCommentPage;
 import com.triprecord.triprecord.record.controller.response.RecordPageResponse;
 import com.triprecord.triprecord.record.controller.response.RecordResponse;
 import com.triprecord.triprecord.record.service.RecordService;
@@ -12,6 +13,7 @@ import jakarta.validation.Valid;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -63,6 +65,12 @@ public class RecordController {
         recordService.modifyRecord(Long.valueOf(authentication.getName()), recordId, request);
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 수정에 성공했습니다."));
     }
+
+    @GetMapping("/{recordId}/comments")
+    public ResponseEntity<RecordCommentPage> getCommentPage(@PageableDefault(size = 5) Pageable pageable,
+                                                            @PathVariable Long recordId) {
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordComments(recordId, pageable));
+    }
   
     @PostMapping("/{recordId}/comments")
     public ResponseEntity<ResponseMessage> postComment(Authentication authentication,
@@ -72,18 +80,18 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseMessage("댓글 전송에 성공했습니다."));
     }
 
-    @DeleteMapping("/comments/{recordCommentId}")
-    public ResponseEntity<ResponseMessage> deleteRecordComment(Authentication authentication, @PathVariable Long recordCommentId) {
-        recordService.deleteCommentFromRecord(Long.valueOf(authentication.getName()), recordCommentId);
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 댓글 삭제에 성공했습니다."));
-    }
-
     @PatchMapping("/comments/{recordCommentId}")
     public ResponseEntity<ResponseMessage> modifyRecordComment(Authentication authentication,
                                                                @PathVariable Long recordCommentId,
                                                                @RequestBody @Valid RecordCommentContent request) {
         recordService.modifyRecordComment(Long.valueOf(authentication.getName()), recordCommentId, request.commentContent());
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("댓글 수정에 성공했습니다."));
+    }
+
+    @DeleteMapping("/comments/{recordCommentId}")
+    public ResponseEntity<ResponseMessage> deleteRecordComment(Authentication authentication, @PathVariable Long recordCommentId) {
+        recordService.deleteCommentFromRecord(Long.valueOf(authentication.getName()), recordCommentId);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage("기록 댓글 삭제에 성공했습니다."));
     }
 
     @PostMapping("/{recordId}/likes")
