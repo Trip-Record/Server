@@ -179,10 +179,10 @@ public class RecordService {
         recordPlaceService.createRecordPlaces(record, addPlaceIds);
     }
 
-    private void modifyImage(Record record, List<String> deleteImages, List<MultipartFile> addImages){
+    private void modifyImage(Record record, List<Long> deleteImages, List<MultipartFile> addImages){
         if(deleteImages==null && addImages==null) return;
         recordImageService.checkImageSizeValid(record, deleteImages, addImages);
-        recordImageService.deleteRecordImages(record, deleteImages);
+        recordImageService.deleteRecordImages(deleteImages);
         recordImageService.createRecordImages(record, addImages);
     }
 

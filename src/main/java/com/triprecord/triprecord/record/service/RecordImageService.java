@@ -26,7 +26,7 @@ public class RecordImageService {
     private final long MAX_IMAGE_SIZE = 10;
 
 
-    public void checkImageSizeValid(Record record, List<String> deleteRequestImages, List<MultipartFile> addRequestImages){
+    public void checkImageSizeValid(Record record, List<Long> deleteRequestImages, List<MultipartFile> addRequestImages){
         long existingSize = recordImageRepository.countByLinkedRecord(record);
         long deleteSize = (deleteRequestImages==null)?0:deleteRequestImages.size();
         long addSize = (addRequestImages==null)?0:addRequestImages.size();
@@ -56,13 +56,13 @@ public class RecordImageService {
     }
 
     @Transactional
-    public void deleteRecordImages(Record record, List<String> deleteRequestImageURLs){
-        if(deleteRequestImageURLs==null || deleteRequestImageURLs.isEmpty()) return;
+    public void deleteRecordImages(List<Long> deleteRequestImageIds){
+        if(deleteRequestImageIds==null || deleteRequestImageIds.isEmpty()) return;
         int S3_PATH_LENGTH = s3Service.getFileURLFromS3(null).toString().length();
-        for(String imageURL : deleteRequestImageURLs){
-            RecordImage recordImage = getRecordImageOrException(record, imageURL);
+        for(Long imageId : deleteRequestImageIds){
+            RecordImage recordImage = getRecordImageOrException(imageId);
+            s3Service.deleteFileFromS3(recordImage.getRecordImgUrl().substring(S3_PATH_LENGTH));
             recordImageRepository.delete(recordImage);
-            s3Service.deleteFileFromS3(imageURL.substring(S3_PATH_LENGTH));
         }
     }
 
@@ -73,8 +73,8 @@ public class RecordImageService {
     }
 
 
-    private RecordImage getRecordImageOrException(Record record, String imageURL){
-        return recordImageRepository.findByLinkedRecordAndRecordImgUrl(record, imageURL).orElseThrow(()->
+    private RecordImage getRecordImageOrException(Long imageURL){
+        return recordImageRepository.findById(imageURL).orElseThrow(()->
                 new TripRecordException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
