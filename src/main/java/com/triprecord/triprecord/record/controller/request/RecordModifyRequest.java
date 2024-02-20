@@ -16,7 +16,7 @@ public record RecordModifyRequest(
         LocalDate changedEndDate,
         @Size(max = 3) List<Long> deletePlaceIds,
         @Size(max = 3) List<Long> addPlaceIds,
-        @Size(max = 10) List<String> deleteImages,
+        @Size(max = 10) List<Long> deleteImages,
         @Size(max = 10) List<MultipartFile> addImages
 ) {
 }
