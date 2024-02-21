@@ -73,8 +73,8 @@ public class RecordImageService {
     }
 
 
-    private RecordImage getRecordImageOrException(Long imageURL){
-        return recordImageRepository.findById(imageURL).orElseThrow(()->
+    private RecordImage getRecordImageOrException(Long recordImageId){
+        return recordImageRepository.findById(recordImageId).orElseThrow(()->
                 new TripRecordException(ErrorCode.IMAGE_NOT_FOUND));
     }
 
