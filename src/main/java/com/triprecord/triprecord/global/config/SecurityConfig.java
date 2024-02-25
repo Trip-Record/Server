@@ -1,7 +1,7 @@
 package com.triprecord.triprecord.global.config;
 
-import com.triprecord.triprecord.global.config.jwt.CustomAccessDeniedHandler;
-import com.triprecord.triprecord.global.config.jwt.CustomJwtAuthenticationEntryPoint;
+import com.triprecord.triprecord.global.exception.CustomJwtAccessDeniedHandler;
+import com.triprecord.triprecord.global.exception.CustomJwtAuthenticationEntryPoint;
 import com.triprecord.triprecord.global.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomJwtAuthenticationEntryPoint customJwtAuthenticationEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomJwtAccessDeniedHandler customJwtAccessDeniedHandler;
 
     private final String[] permitAllPaths = {
             "/users/login",
@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception ->
                 {
                     exception.authenticationEntryPoint(customJwtAuthenticationEntryPoint); // 인증 에러
-                    exception.accessDeniedHandler(customAccessDeniedHandler); // 인가 에러
+                    exception.accessDeniedHandler(customJwtAccessDeniedHandler); // 인가 에러
                 });
 
             /*
