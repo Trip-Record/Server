@@ -1,4 +1,4 @@
-package com.triprecord.triprecord.global.config.jwt;
+package com.triprecord.triprecord.global.exception;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +17,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
       }
 
       private void setResponse(HttpServletResponse response) {
+            response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       }
 }
