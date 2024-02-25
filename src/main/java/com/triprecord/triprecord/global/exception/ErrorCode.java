@@ -11,7 +11,7 @@ public enum ErrorCode {
 
     //Jwt
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED,"토큰이 유효하지 않습니다."),
-    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN,"접금 권한이 존재하지 않습니다."),
+    FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN,"접근 권한이 존재하지 않습니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "유저 정보를 찾을 수 없습니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
