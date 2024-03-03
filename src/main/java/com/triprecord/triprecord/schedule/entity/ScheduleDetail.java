@@ -8,12 +8,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -41,8 +40,6 @@ public class ScheduleDetail {
     }
 
     public void updateScheduleDetail(ScheduleDetailUpdateRequest updateRequest) {
-        if (!updateRequest.scheduleDetailContent().isBlank()) {
-            this.scheduleContent = updateRequest.scheduleDetailContent();
-        }
+        this.scheduleContent = updateRequest.scheduleDetailContent();
     }
 }
