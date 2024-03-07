@@ -35,10 +35,7 @@ public class ScheduleCommentService {
                 pageable);
         List<ScheduleCommentGetResponse> scheduleGetResponses = new ArrayList<>();
         for (ScheduleComment scheduleComment : scheduleComments.getContent()) {
-            boolean isUserCreated = false;
-            if (user.isPresent()) {
-                isUserCreated = scheduleComment.getCommentedUser() == user.get();
-            }
+            boolean isUserCreated = isScheduleCommentCreated(user, scheduleComment);
             scheduleGetResponses.add(ScheduleCommentGetResponse.of(scheduleComment, isUserCreated));
         }
 
@@ -84,6 +81,10 @@ public class ScheduleCommentService {
     public ScheduleComment getScheduleCommentOrException(Long scheduleCommentId) {
         return scheduleCommentRepository.findById(scheduleCommentId).orElseThrow(() ->
                 new TripRecordException(ErrorCode.SCHEDULE_COMMENT_NOT_FOUND));
+    }
+
+    private boolean isScheduleCommentCreated(Optional<User> user, ScheduleComment scheduleComment) {
+        return user.filter(value -> value == scheduleComment.getCommentedUser()).isPresent();
     }
 
 }
