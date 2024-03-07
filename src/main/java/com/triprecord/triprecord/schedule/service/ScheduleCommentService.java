@@ -9,7 +9,9 @@ import com.triprecord.triprecord.schedule.entity.Schedule;
 import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.schedule.repository.ScheduleCommentRepository;
 import com.triprecord.triprecord.user.entity.User;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,12 +29,18 @@ public class ScheduleCommentService {
         return scheduleCommentRepository.countByCommentedSchedule(schedule);
     }
 
-    public ScheduleCommentPageGetResponse getScheduleComments(Schedule schedule, Pageable pageable) {
+    public ScheduleCommentPageGetResponse getScheduleComments(Optional<User> user, Schedule schedule,
+                                                              Pageable pageable) {
         Page<ScheduleComment> scheduleComments = scheduleCommentRepository.findAllByCommentedSchedule(schedule,
                 pageable);
-        List<ScheduleCommentGetResponse> scheduleGetResponses = scheduleComments.stream()
-                .map(ScheduleCommentGetResponse::of)
-                .toList();
+        List<ScheduleCommentGetResponse> scheduleGetResponses = new ArrayList<>();
+        for (ScheduleComment scheduleComment : scheduleComments.getContent()) {
+            boolean isUserCreated = false;
+            if (user.isPresent()) {
+                isUserCreated = scheduleComment.getCommentedUser() == user.get();
+            }
+            scheduleGetResponses.add(ScheduleCommentGetResponse.of(scheduleComment, isUserCreated));
+        }
 
         return ScheduleCommentPageGetResponse.builder()
                 .totalPages(scheduleComments.getTotalPages())

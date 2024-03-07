@@ -4,18 +4,19 @@ import static com.triprecord.triprecord.global.util.Formatter.getDateTime;
 
 import com.triprecord.triprecord.schedule.entity.ScheduleComment;
 import com.triprecord.triprecord.user.dto.response.UserProfile;
-import java.time.format.DateTimeFormatter;
 
 public record ScheduleCommentGetResponse(
         UserProfile userProfile,
         String commentContent,
-        String commentCreatedTime
+        String commentCreatedTime,
+        Boolean isUserCreated
 ) {
-    public static ScheduleCommentGetResponse of(ScheduleComment scheduleComment) {
+    public static ScheduleCommentGetResponse of(ScheduleComment scheduleComment, boolean isUserCreated) {
         return new ScheduleCommentGetResponse(
                 UserProfile.of(scheduleComment.getCommentedUser()),
                 scheduleComment.getScheduleCommentContent(),
-                getDateTime(scheduleComment.getCreatedTime())
+                getDateTime(scheduleComment.getCreatedTime()),
+                isUserCreated
         );
     }
 }
