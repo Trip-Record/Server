@@ -35,7 +35,7 @@ public class ScheduleCommentService {
                 pageable);
         List<ScheduleCommentGetResponse> scheduleGetResponses = new ArrayList<>();
         for (ScheduleComment scheduleComment : scheduleComments.getContent()) {
-            boolean isUserCreated = isScheduleCommentCreated(user, scheduleComment);
+            boolean isUserCreated = isUserScheduleCommentCreated(user, scheduleComment);
             scheduleGetResponses.add(ScheduleCommentGetResponse.of(scheduleComment, isUserCreated));
         }
 
@@ -83,7 +83,7 @@ public class ScheduleCommentService {
                 new TripRecordException(ErrorCode.SCHEDULE_COMMENT_NOT_FOUND));
     }
 
-    private boolean isScheduleCommentCreated(Optional<User> user, ScheduleComment scheduleComment) {
+    private boolean isUserScheduleCommentCreated(Optional<User> user, ScheduleComment scheduleComment) {
         return user.filter(value -> value == scheduleComment.getCommentedUser()).isPresent();
     }
 

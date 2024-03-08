@@ -9,7 +9,7 @@ public record ScheduleCommentGetResponse(
         UserProfile userProfile,
         String commentContent,
         String commentCreatedTime,
-        Boolean isUserCreated
+        boolean isUserCreated
 ) {
     public static ScheduleCommentGetResponse of(ScheduleComment scheduleComment, boolean isUserCreated) {
         return new ScheduleCommentGetResponse(
