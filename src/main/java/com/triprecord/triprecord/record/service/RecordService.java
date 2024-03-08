@@ -81,17 +81,18 @@ public class RecordService {
         List<PlaceBasicData> recordPlaceData = recordPlaceService.getRecordPlaceBasicData(record);
         List<RecordImageData> recordImageData = recordImageService.findRecordImageData(record);
 
-        Boolean userRecordLiked = findUserRecordLiked(userId, record);
+        boolean isUserCreated = false; boolean isUserLiked = false;
+        if(userId.isPresent()) {
+            isUserCreated = Objects.equals(record.getCreatedUser().getUserId(), userId.get());
+            isUserLiked = recordLikeService.findUserLikedRecord(record, userService.getUserOrException(userId.get()));
+        }
+
         Long likeCount = recordLikeService.getRecordLikeCount(record);
         Long commentCount = recordCommentService.getRecordCommentCount(record);
 
-        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, userRecordLiked, likeCount, commentCount);
+        return RecordResponse.fromRecordData(record, recordPlaceData, recordImageData, isUserCreated, isUserLiked, likeCount, commentCount);
     }
 
-    private Boolean findUserRecordLiked(Optional<Long> userId, Record record) {
-        if(userId.isPresent()) return recordLikeService.findUserLikedRecord(record, userService.getUserOrException(userId.get()));
-        return false;
-    }
 
     @Transactional
     public void deleteRecord(Long userId, Long recordId){
