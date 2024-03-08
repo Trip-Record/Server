@@ -81,12 +81,17 @@ public class ScheduleService {
         for (Schedule schedule : schedules.getContent()) {
             long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
             long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
-            Boolean userScheduleLiked = findUserScheduleLiked(user, schedule);
+            boolean userScheduleCreated = false, userScheduleLiked = false;
+            if (user.isPresent()) {
+                userScheduleCreated = schedule.getCreatedUser() == user.get();
+                userScheduleLiked = scheduleLikeService.findUserLikedSchedule(schedule, user.get());
+            }
             scheduleGetResponses.add(ScheduleGetResponse.of(
                     schedule.getCreatedUser(),
                     schedule,
                     schedule.getSchedulePlaces(),
                     schedule.getScheduleDetails(),
+                    userScheduleCreated,
                     userScheduleLiked,
                     scheduleLikeCount,
                     scheduleCommentCount
@@ -108,7 +113,12 @@ public class ScheduleService {
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
         Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
-        Boolean userScheduleLiked = findUserScheduleLiked(user, schedule);
+        boolean userScheduleCreated = false, userScheduleLiked = false;
+        if (user.isPresent()) {
+            userScheduleCreated = schedule.getCreatedUser() == user.get();
+            userScheduleLiked = scheduleLikeService.findUserLikedSchedule(schedule, user.get());
+        }
+
         Long scheduleLikeCount = scheduleLikeService.getScheduleLikeCount(schedule);
         Long scheduleCommentCount = scheduleCommentService.getScheduleCommentCount(schedule);
 
@@ -117,17 +127,11 @@ public class ScheduleService {
                 schedule,
                 schedulePlaces,
                 scheduleDetails,
+                userScheduleCreated,
                 userScheduleLiked,
                 scheduleLikeCount,
                 scheduleCommentCount
         );
-    }
-
-    private Boolean findUserScheduleLiked(Optional<User> user, Schedule schedule) {
-        if (user.isPresent()) {
-            return scheduleLikeService.findUserLikedSchedule(schedule, user.get());
-        }
-        return false;
     }
 
     @Transactional
@@ -163,9 +167,9 @@ public class ScheduleService {
         scheduleLikeService.createScheduleLike(user, schedule);
     }
 
-    public ScheduleCommentPageGetResponse getScheduleComments(Long scheduleId, Pageable pageable) {
+    public ScheduleCommentPageGetResponse getScheduleComments(Optional<User> user, Long scheduleId, Pageable pageable) {
         Schedule schedule = getScheduleOrException(scheduleId);
-        return scheduleCommentService.getScheduleComments(schedule, pageable);
+        return scheduleCommentService.getScheduleComments(user, schedule, pageable);
     }
 
     @Transactional

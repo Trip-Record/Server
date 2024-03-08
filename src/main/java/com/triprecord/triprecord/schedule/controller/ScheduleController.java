@@ -112,9 +112,13 @@ public class ScheduleController {
     }
 
     @GetMapping("{scheduleId}/comments")
-    public ResponseEntity<ScheduleCommentPageGetResponse> getScheduleComments(@PathVariable Long scheduleId,
+    public ResponseEntity<ScheduleCommentPageGetResponse> getScheduleComments(Authentication authentication,
+                                                                              @PathVariable Long scheduleId,
                                                                               @PageableDefault(size = 5) Pageable pageable) {
-        ScheduleCommentPageGetResponse response = scheduleService.getScheduleComments(scheduleId, pageable);
+        Optional<User> user = Optional.ofNullable(
+                (authentication == null) ? null
+                        : userService.getUserOrException(Long.parseLong(authentication.getName())));
+        ScheduleCommentPageGetResponse response = scheduleService.getScheduleComments(user, scheduleId, pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);

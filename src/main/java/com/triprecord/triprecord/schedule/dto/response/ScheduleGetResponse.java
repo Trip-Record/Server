@@ -5,7 +5,6 @@ import com.triprecord.triprecord.schedule.entity.ScheduleDetail;
 import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.user.dto.response.UserProfile;
 import com.triprecord.triprecord.user.entity.User;
-
 import java.util.List;
 
 public record ScheduleGetResponse(
@@ -16,7 +15,8 @@ public record ScheduleGetResponse(
         String scheduleStartDate,
         String scheduleEndDate,
         List<ScheduleDetailGetResponse> scheduleDetails,
-        Boolean isUserLiked,
+        boolean isUserCreated,
+        boolean isUserLiked,
         Long scheduleLikeCount,
         Long scheduleCommentCount
 ) {
@@ -24,7 +24,8 @@ public record ScheduleGetResponse(
                                          Schedule schedule,
                                          List<SchedulePlace> schedulePlaces,
                                          List<ScheduleDetail> scheduleDetails,
-                                         Boolean userLiked,
+                                         boolean isUserCreated,
+                                         boolean isUserLiked,
                                          Long scheduleLikeCount,
                                          Long scheduleCommentCount) {
         return new ScheduleGetResponse(
@@ -39,7 +40,8 @@ public record ScheduleGetResponse(
                 scheduleDetails.stream()
                         .map(ScheduleDetailGetResponse::of)
                         .toList(),
-                userLiked,
+                isUserCreated,
+                isUserLiked,
                 scheduleLikeCount,
                 scheduleCommentCount
         );
