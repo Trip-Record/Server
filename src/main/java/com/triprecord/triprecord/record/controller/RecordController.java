@@ -67,9 +67,11 @@ public class RecordController {
     }
 
     @GetMapping("/{recordId}/comments")
-    public ResponseEntity<RecordCommentPage> getCommentPage(@PageableDefault(size = 5) Pageable pageable,
+    public ResponseEntity<RecordCommentPage> getCommentPage(Authentication authentication,
+                                                            @PageableDefault(size = 5) Pageable pageable,
                                                             @PathVariable Long recordId) {
-        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordComments(recordId, pageable));
+        Optional<Long> userId = Optional.ofNullable((authentication == null) ? null : Long.parseLong(authentication.getName()));
+        return ResponseEntity.status(HttpStatus.OK).body(recordService.getRecordComments(userId, recordId, pageable));
     }
   
     @PostMapping("/{recordId}/comments")

@@ -118,10 +118,10 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public RecordCommentPage getRecordComments(Long recordId, Pageable pageable) {
+    public RecordCommentPage getRecordComments(Optional<Long> userId, Long recordId, Pageable pageable) {
         Record record = getRecordOrException(recordId);
 
-        return recordCommentService.getRecordComments(record, pageable);
+        return recordCommentService.getRecordComments(userId, record, pageable);
     }
   
     @Transactional

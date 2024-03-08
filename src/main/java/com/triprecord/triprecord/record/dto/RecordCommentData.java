@@ -8,14 +8,16 @@ import com.triprecord.triprecord.user.dto.response.UserProfile;
 public record RecordCommentData(
         UserProfile userProfile,
         String commentContent,
-        String commentCreatedTime
+        String commentCreatedTime,
+        boolean isUserCreated
 ) {
 
-    public static RecordCommentData fromEntity(RecordComment recordComment) {
+    public static RecordCommentData fromEntity(RecordComment recordComment, boolean isUserCreated) {
         return new RecordCommentData(
                 UserProfile.of(recordComment.getCommentedUser()),
                 recordComment.getCommentContent(),
-                getDateTime(recordComment.getCreatedTime())
+                getDateTime(recordComment.getCreatedTime()),
+                isUserCreated
         );
     }
 }
