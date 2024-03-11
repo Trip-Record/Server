@@ -9,7 +9,9 @@ import com.triprecord.triprecord.record.entity.Record;
 import com.triprecord.triprecord.record.entity.RecordComment;
 import com.triprecord.triprecord.record.repository.RecordCommentRepository;
 import com.triprecord.triprecord.user.entity.User;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,9 +32,13 @@ public class RecordCommentService {
                 ()->new TripRecordException(ErrorCode.RECORD_COMMENT_NOT_FOUND));
     }
 
-    public RecordCommentPage getRecordComments(Record record, Pageable pageable) {
+    public RecordCommentPage getRecordComments(Optional<Long> userId, Record record, Pageable pageable) {
         Page<RecordComment> comments = recordCommentRepository.findAllByCommentedRecord(record, pageable);
-        List<RecordCommentData> commentData = comments.map(RecordCommentData::fromEntity).toList();
+        List<RecordCommentData> commentData = new ArrayList<>();
+        for(RecordComment comment : comments) {
+            boolean isUserCreated = userId.isPresent() && userId.get().equals(comment.getCommentedUser().getUserId());
+            commentData.add(RecordCommentData.fromEntity(comment, isUserCreated));
+        }
 
         return RecordCommentPage.builder()
                 .totalPages(comments.getTotalPages())
