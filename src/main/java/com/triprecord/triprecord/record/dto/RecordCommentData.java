@@ -7,6 +7,7 @@ import com.triprecord.triprecord.user.dto.response.UserProfile;
 
 public record RecordCommentData(
         UserProfile userProfile,
+        Long commentId,
         String commentContent,
         String commentCreatedTime,
         boolean isUserCreated
@@ -15,6 +16,7 @@ public record RecordCommentData(
     public static RecordCommentData fromEntity(RecordComment recordComment, boolean isUserCreated) {
         return new RecordCommentData(
                 UserProfile.of(recordComment.getCommentedUser()),
+                recordComment.getCommentId(),
                 recordComment.getCommentContent(),
                 getDateTime(recordComment.getCreatedTime()),
                 isUserCreated
