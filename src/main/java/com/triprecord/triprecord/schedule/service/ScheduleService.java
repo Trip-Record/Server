@@ -16,7 +16,6 @@ import com.triprecord.triprecord.schedule.entity.SchedulePlace;
 import com.triprecord.triprecord.schedule.repository.ScheduleRepository;
 import com.triprecord.triprecord.user.entity.User;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -86,11 +85,13 @@ public class ScheduleService {
                 userScheduleCreated = schedule.getCreatedUser() == user.get();
                 userScheduleLiked = scheduleLikeService.findUserLikedSchedule(schedule, user.get());
             }
+            List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
+            scheduleDetails.sort(Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
             scheduleGetResponses.add(ScheduleGetResponse.of(
                     schedule.getCreatedUser(),
                     schedule,
                     schedule.getSchedulePlaces(),
-                    schedule.getScheduleDetails(),
+                    scheduleDetails,
                     userScheduleCreated,
                     userScheduleLiked,
                     scheduleLikeCount,
@@ -111,7 +112,7 @@ public class ScheduleService {
         List<SchedulePlace> schedulePlaces = schedule.getSchedulePlaces();
 
         List<ScheduleDetail> scheduleDetails = schedule.getScheduleDetails();
-        Collections.sort(scheduleDetails, Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
+        scheduleDetails.sort(Comparator.comparing(ScheduleDetail::getScheduleDetailDate));
 
         boolean userScheduleCreated = false, userScheduleLiked = false;
         if (user.isPresent()) {
