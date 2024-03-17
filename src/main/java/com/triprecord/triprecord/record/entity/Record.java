@@ -48,6 +48,9 @@ public class Record {
     @OneToMany(mappedBy = "likedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RecordLike> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "commentedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<RecordComment> comments = new ArrayList<>();
+
     @OneToMany(mappedBy = "linkedRecord", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<RecordImage> recordImages = new ArrayList<>();
 
